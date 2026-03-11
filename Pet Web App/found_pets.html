@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publikasikan Laporan Baru | PetFounds</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div id="toast-container"></div>
+
+    <div class="app-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <div class="logo-icon flex-center"><i class="fa-solid fa-paw"></i></div>
+                    <span class="logo-text">Pet<span class="text-gradient">Founds</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="post_report.html" class="nav-item"><i class="fa-solid fa-tower-broadcast"></i> <span>Radar Laporan</span></a>
+                <a href="found_pets.html" class="nav-item active"><i class="fa-solid fa-plus-circle"></i> <span>Buat Laporan</span></a>
+                <a href="messages.html" class="nav-item"><i class="fa-regular fa-comment-dots"></i> <span>Pesan</span></a>
+                <a href="profile.html" class="nav-item"><i class="fa-regular fa-user"></i> <span>Profil</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn btn-logout btn-glass"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="container-fluid page-pt max-w-800">
+                <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--secondary); margin-bottom: 35px;">Publikasikan Laporan Jaringan</h2>
+                
+                <form id="form-create-report" class="glass-panel-form">
+                    <label class="form-label" style="display:block; margin-bottom:10px; font-weight:600; color:var(--text-muted);">Pilih Jenis Laporan</label>
+                    <div class="report-type-selector">
+                        <label class="type-card">
+                            <input type="radio" name="reportType" value="found" checked>
+                            <div class="type-content found-glow">
+                                <i class="fa-solid fa-hand-holding-heart"></i>
+                                <span>Menemukan Hewan</span>
+                            </div>
+                        </label>
+                        <label class="type-card">
+                            <input type="radio" name="reportType" value="lost">
+                            <div class="type-content lost-glow">
+                                <i class="fa-solid fa-search"></i>
+                                <span>Kehilangan Hewan</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="upload-modern" id="upload-zone">
+                        <input type="file" id="image-input" accept="image/*" class="hidden-input">
+                        <div id="upload-placeholder" class="flex-center" style="flex-direction: column;">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <h4 style="color: var(--secondary);">Tarik foto atau klik untuk unggah</h4>
+                            <p class="text-muted" style="font-size:0.9rem; margin-top:5px;">Rasio kotak (1:1) direkomendasikan</p>
+                        </div>
+                        <img id="image-preview" class="hidden" alt="Preview">
+                        <button type="button" id="btn-remove-image" class="btn btn-glass btn-sm hidden" style="position: absolute; bottom: 15px; z-index: 20; padding: 8px 15px;"><i class="fa-solid fa-trash"></i> Hapus</button>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="input-modern"><i class="fa-solid fa-tag"></i><input type="text" id="r-name" placeholder="Nama Hewan (Opsional)"></div>
+                        <div class="input-modern">
+                            <i class="fa-solid fa-paw"></i>
+                            <select id="r-species" required style="padding-right: 20px;">
+                                <option value="" disabled selected>Spesies Hewan...</option>
+                                <option value="Kucing">Kucing</option>
+                                <option value="Anjing">Anjing</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="input-modern"><i class="fa-regular fa-calendar"></i><input type="date" id="r-date" required></div>
+                        <div class="input-modern"><i class="fa-solid fa-map-pin"></i><input type="text" id="r-location" placeholder="Lokasi Terakhir / Ditemukan" required></div>
+                    </div>
+                    
+                    <div class="input-modern no-icon" style="margin-top: 20px;">
+                        <textarea id="r-desc" rows="5" placeholder="Detail ciri-ciri khusus, kronologi, warna kalung, dll..." required></textarea>
+                    </div>
+
+                    <div class="flex-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" style="border-radius:14px;">Publikasikan Laporan <i class="fa-solid fa-satellite-dish"></i></button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

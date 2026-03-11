@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radar Laporan Jaringan | PetFounds</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div id="post-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="close-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+            <div id="modal-body-content">
+                </div>
+        </div>
+    </div>
+
+    <div class="app-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <div class="logo-icon flex-center"><i class="fa-solid fa-paw"></i></div>
+                    <span class="logo-text">Pet<span class="text-gradient">Founds</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="post_report.html" class="nav-item active"><i class="fa-solid fa-tower-broadcast"></i> <span>Radar Laporan</span></a>
+                <a href="found_pets.html" class="nav-item"><i class="fa-solid fa-plus-circle"></i> <span>Buat Laporan</span></a>
+                <a href="messages.html" class="nav-item"><i class="fa-regular fa-comment-dots"></i> <span>Pesan</span></a>
+                <a href="profile.html" class="nav-item"><i class="fa-regular fa-user"></i> <span>Profil</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn btn-logout btn-glass"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="container-fluid page-pt">
+                <div class="flex-between gap-4" style="margin-bottom: 30px; flex-wrap: wrap;">
+                    <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--secondary);">Radar Jaringan Live</h2>
+                    <div class="search-modern">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="search-feed" placeholder="Cari lokasi, jenis, ciri hewan...">
+                    </div>
+                </div>
+
+                <div class="feed-grid" id="feed-container">
+                    <div style="grid-column: 1/-1; text-align:center; padding: 50px; color:var(--text-muted);">Menghubungkan ke jaringan...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

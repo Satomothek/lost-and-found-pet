@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil | PetFounds</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div id="toast-container"></div>
+
+    <div id="edit-profile-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
+            <button class="modal-close" onclick="document.getElementById('edit-profile-modal').classList.add('hidden')"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="margin-bottom: 20px;">Fitur Sedang Dikembangkan</h3>
+            <p class="text-muted">Fitur edit profil akan segera hadir di pembaruan berikutnya.</p>
+        </div>
+    </div>
+    
+    <div class="app-wrapper">
+        <aside class="sidebar glass-panel">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <div class="logo-icon flex-center"><i class="fa-solid fa-paw"></i></div>
+                    <span class="logo-text">Pet<span class="text-gradient">Founds</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="post_report.html" class="nav-item"><i class="fa-solid fa-tower-broadcast"></i> <span>Radar Laporan</span></a>
+                <a href="found_pets.html" class="nav-item"><i class="fa-solid fa-plus-circle"></i> <span>Buat Laporan</span></a>
+                <a href="messages.html" class="nav-item"><i class="fa-regular fa-comment-dots"></i> <span>Pesan</span></a>
+                <a href="profile.html" class="nav-item active"><i class="fa-regular fa-user"></i> <span>Profil</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn btn-logout btn-glass"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+            </div>
+        </aside>
+
+        <main class="main-content flex-center" style="align-items: flex-start;">
+            <div class="container-fluid page-pt" style="width: 100%; max-width: 800px;">
+                
+                <div class="profile-card-premium fade-up">
+                    <div class="profile-cover-gradient"></div>
+                    <div class="profile-content-main">
+                        <div class="profile-avatar-wrapper">
+                            <img src="https://i.pravatar.cc/150?img=68" alt="Profile">
+                            <div class="verified-badge"><i class="fa-solid fa-check"></i></div>
+                        </div>
+                        <div class="profile-header-info">
+                            <h2 id="prof-name-display">Memuat...</h2>
+                            <p class="role-text text-gradient font-bold">Rescuer Terverifikasi</p>
+                        </div>
+                        
+                        <div class="profile-contact-chips mt-4">
+                            <div class="chip-info"><i class="fa-solid fa-envelope"></i> <span id="prof-email-display">-</span></div>
+                            <div class="chip-info"><i class="fa-solid fa-phone"></i> +62 812-3456-7890</div>
+                            <div class="chip-info"><i class="fa-solid fa-map-location-dot"></i> Jl. Raya Secang, Magelang</div>
+                        </div>
+
+                        <div class="profile-stats-divider">
+                            <div class="stat-block">
+                                <h3 id="stat-reports">0</h3>
+                                <span>Laporan</span>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat-block">
+                                <h3 class="text-success">4</h3>
+                                <span>Diselamatkan</span>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat-block">
+                                <h3 class="text-primary">1.2k</h3>
+                                <span>Reputasi</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4" style="width: 100%; max-width: 300px; margin: 20px auto 0;">
+                            <button class="btn btn-primary btn-block shadow-primary" onclick="document.getElementById('edit-profile-modal').classList.remove('hidden')">Sunting Profil</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-xl mb-4 mt-4 fade-up" style="animation-delay: 0.2s; color: var(--secondary);">Laporan Saya</h3>
+                <div id="profile-activity-list" class="fade-up" style="animation-delay: 0.3s; display: flex; flex-direction: column; gap: 15px;">
+                    <div class="text-center text-muted"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data...</div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

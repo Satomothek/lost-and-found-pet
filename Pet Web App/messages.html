@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesan | PetFounds</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div id="toast-container"></div>
+    
+    <div class="app-wrapper">
+        <aside class="sidebar glass-panel">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <div class="logo-icon flex-center"><i class="fa-solid fa-paw"></i></div>
+                    <span class="logo-text">Pet<span class="text-gradient">Founds</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="post_report.html" class="nav-item"><i class="fa-solid fa-tower-broadcast"></i> <span>Radar Laporan</span></a>
+                <a href="found_pets.html" class="nav-item"><i class="fa-solid fa-plus-circle"></i> <span>Buat Laporan</span></a>
+                <a href="messages.html" class="nav-item active"><i class="fa-regular fa-comment-dots"></i> <span>Pesan</span></a>
+                <a href="profile.html" class="nav-item"><i class="fa-regular fa-user"></i> <span>Profil</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn btn-logout btn-glass"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="container-fluid page-pt" style="height: 100vh; display: flex; flex-direction: column;">
+                <h2 style="font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 20px;">Kotak Masuk</h2>
+                
+                <div class="chat-wrapper glass-panel">
+                    <div class="chat-list-panel">
+                        <div style="padding: 20px; border-bottom: 1px solid var(--glass-border);">
+                            <div class="search-modern" style="width: 100%;">
+                                <i class="fa-solid fa-search" style="left: 15px;"></i>
+                                <input type="text" placeholder="Cari obrolan..." style="padding: 12px 15px 12px 40px; font-size: 0.9rem; max-width: 100%;">
+                            </div>
+                        </div>
+                        <div class="chat-contacts" id="chat-contact-list">
+                            </div>
+                    </div>
+
+                    <div class="chat-active-panel">
+                        <div class="chat-header">
+                            <div class="flex-center" style="gap: 15px;">
+                                <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" id="active-chat-avatar" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; box-shadow: var(--shadow-sm);">
+                                <div>
+                                    <h3 id="active-chat-name" style="font-size: 1.1rem; color: var(--secondary); font-weight: 700; line-height: 1.2;">Memuat...</h3>
+                                    <span style="font-size: 0.8rem; color: var(--success); font-weight: 600;"><i class="fa-solid fa-circle" style="font-size: 0.5rem; margin-right: 5px;"></i>Online</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chat-messages-area">
+                            </div>
+
+                        <form class="chat-input-area" id="chat-form">
+                            <button type="button" class="icon-btn"><i class="fa-solid fa-paperclip"></i></button>
+                            <input type="text" id="chat-input" placeholder="Ketik pesan Anda di sini..." required autocomplete="off">
+                            <button type="submit" class="btn btn-primary" style="padding: 12px 20px; border-radius: 14px;"><i class="fa-solid fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
