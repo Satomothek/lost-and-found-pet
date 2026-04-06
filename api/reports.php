@@ -51,6 +51,10 @@ if ($method === 'GET') {
     
     $reports = fetchAll($connection, $query, $params);
     
+    if ($reports === false) {
+        errorResponse('Gagal memuat laporan: ' . getLastError($connection), null, 500);
+    }
+    
     if (!$reports) {
         $reports = [];
     }
@@ -60,14 +64,14 @@ if ($method === 'GET') {
         return [
             'id' => $report['id'],
             'type' => $report['type'],
-            'author' => $report['author'],
-            'authorImg' => $report['authorImg'],
+            'author' => $report['author'] ?: 'Anonim',
+            'authorImg' => normalizeAssetUrl($report['authorImg'] ?: 'https://i.pravatar.cc/150?img=68'),
             'petName' => $report['pet_name'],
             'species' => $report['species'],
             'location' => $report['location'],
             'date' => timeAgo($report['created_at']),
             'desc' => $report['description'],
-            'image' => $report['image_url'],
+            'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
             'likes' => intval($report['likes']),
             'isLiked' => boolval($report['isLiked'])
         ];
@@ -83,14 +87,22 @@ elseif ($method === 'POST' && $action === 'create') {
     $species = sanitizeInput($_POST['species'] ?? '');
     $location = sanitizeInput($_POST['location'] ?? '');
     $description = sanitizeInput($_POST['description'] ?? '');
+    $reportDate = sanitizeInput($_POST['date'] ?? '');
     
     // Validate
-    if (!$type || !$species || !$location || !$description) {
+    if (!$type || !$species || !$location || !$description || !$reportDate) {
         errorResponse('Semua field wajib diisi', null, 400);
     }
     
     if (!in_array($type, ['lost', 'found'])) {
         errorResponse('Tipe laporan tidak valid', null, 400);
+    }
+
+    $today = date('Y-m-d');
+    $minDate = date('Y-m-d', strtotime('-7 days'));
+
+    if ($reportDate < $minDate || $reportDate > $today) {
+        errorResponse('Tanggal harus antara ' . $minDate . ' sampai ' . $today, null, 400);
     }
     
     // Handle image upload

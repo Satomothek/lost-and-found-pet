@@ -168,6 +168,40 @@ function uploadImage($file, $uploadDir = 'uploads/') {
     return ['success' => false, 'error' => 'Gagal upload file'];
 }
 
+function normalizeAssetUrl($url) {
+    if (!$url) {
+        return '';
+    }
+
+    $url = trim($url);
+
+    if (preg_match('/^(https?:)?\/\//i', $url)) {
+        return $url;
+    }
+
+    if (strpos($url, '../') === 0) {
+        return $url;
+    }
+
+    if ($url[0] === '/') {
+        return '..' . $url;
+    }
+
+    if (strpos($url, 'uploads/') === 0) {
+        return '../public/' . $url;
+    }
+
+    if (strpos($url, 'public/uploads/') === 0) {
+        return '../' . $url;
+    }
+
+    if (strpos($url, 'public/') === 0) {
+        return '../' . $url;
+    }
+
+    return $url;
+}
+
 // ========== DATE FORMATTING ==========
 function formatDate($date, $format = 'id') {
     $dateObj = new DateTime($date);

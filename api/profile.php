@@ -24,6 +24,12 @@ if ($method === 'GET' && !$action) {
     // Get user reports count
     $reportsQuery = "SELECT COUNT(*) as count FROM pet_reports WHERE user_id = ? AND status = 'active'";
     $reportsCount = fetchOne($connection, $reportsQuery, [$userId]);
+
+    $lostQuery = "SELECT COUNT(*) as count FROM pet_reports WHERE user_id = ? AND status = 'active' AND type = 'lost'";
+    $lostCount = fetchOne($connection, $lostQuery, [$userId]);
+
+    $foundQuery = "SELECT COUNT(*) as count FROM pet_reports WHERE user_id = ? AND status = 'active' AND type = 'found'";
+    $foundCount = fetchOne($connection, $foundQuery, [$userId]);
     
     // Get user recent reports
     $recentQuery = "SELECT id, user_id, type, pet_name, species, description, image_url, created_at
@@ -42,11 +48,13 @@ if ($method === 'GET' && !$action) {
         'id' => $user['id'],
         'name' => $user['name'],
         'email' => $user['email'],
-        'avatar' => $user['avatar_url'],
+        'avatar' => normalizeAssetUrl($user['avatar_url'] ?: 'https://i.pravatar.cc/150?img=68'),
         'bio' => $user['bio'] ?? '',
         'phone' => $user['phone'] ?? '',
         'joined' => formatDate($user['created_at']),
         'reports_count' => intval($reportsCount['count']),
+        'lost_count' => intval($lostCount['count']),
+        'found_count' => intval($foundCount['count']),
         'recent_reports' => array_map(function($report) {
             return [
                 'id' => $report['id'],
@@ -54,7 +62,7 @@ if ($method === 'GET' && !$action) {
                 'petName' => $report['pet_name'],
                 'species' => $report['species'],
                 'description' => $report['description'],
-                'image' => $report['image_url'],
+                'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
                 'date' => timeAgo($report['created_at'])
             ];
         }, $recent)
@@ -132,7 +140,7 @@ elseif ($method === 'POST' && $action === 'avatar') {
         $avatarUrl = 'public/uploads/avatars/' . $upload['filename'];
         
         if (updateUserAvatar($connection, $currentUser['id'], $avatarUrl)) {
-            successResponse('Avatar berhasil diperbarui', ['avatar_url' => $avatarUrl]);
+            successResponse('Avatar berhasil diperbarui', ['avatar_url' => normalizeAssetUrl($avatarUrl)]);
         } else {
             errorResponse('Gagal menyimpan avatar', null, 500);
         }
@@ -171,7 +179,7 @@ elseif ($method === 'GET' && $action === 'reports') {
             'species' => $report['species'],
             'location' => $report['location'],
             'description' => $report['description'],
-            'image' => $report['image_url'],
+            'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
             'date' => timeAgo($report['created_at'])
         ];
     }, $reports);

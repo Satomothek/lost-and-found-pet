@@ -255,6 +255,58 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 .type-content i { font-size: 2.5rem; margin-bottom: 10px; display: block; }
 .type-card input:checked + .found-glow { background-color: white; border-color: var(--success); color: var(--success); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15); }
 .type-card input:checked + .lost-glow { background-color: white; border-color: var(--danger); color: var(--danger); box-shadow: 0 10px 20px rgba(239, 68, 68, 0.15); }
+.report-type-card {
+    transition: var(--transition);
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: #f8fafc;
+    color: var(--text-dark);
+    padding: 28px 24px;
+    border-radius: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    justify-content: center;
+    min-height: 170px;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(15, 23, 42, 0.04);
+}
+.report-type-card i {
+    font-size: 2.2rem;
+    color: var(--text-muted);
+}
+.report-type-card span {
+    display: block;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+.report-type-card.active {
+    border-width: 2px;
+    box-shadow: 0 25px 45px rgba(15, 23, 42, 0.12);
+}
+.report-type-card.report-type-found.active {
+    border-color: var(--success);
+    background: rgba(16, 185, 129, 0.08);
+}
+.report-type-card.report-type-found.active i,
+.report-type-card.report-type-found.active span {
+    color: var(--success);
+}
+.report-type-card.report-type-lost.active {
+    border-color: var(--danger);
+    background: rgba(239, 68, 68, 0.08);
+}
+.report-type-card.report-type-lost.active i,
+.report-type-card.report-type-lost.active span {
+    color: var(--danger);
+}
+.report-type-card:hover {
+    transform: translateY(-4px);
+}
+.report-type-card input[type="radio"] {
+    display: none;
+}
 
 .upload-modern { border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 40px; text-align: center; background-color: rgba(255,255,255,0.4); cursor: pointer; position: relative; min-height: 250px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 30px; }
 .upload-icon { font-size: 3rem; color: var(--primary); margin-bottom: 10px; }
@@ -310,7 +362,37 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
     .report-type-selector { flex-direction: column; }
     .footer-content { flex-direction: column; gap: 20px; text-align: center; }
 
-    /* ================= CHAT APPLICATION UI ================= */
+    /* Profile header becomes responsive a bit earlier */
+    .profile-info-wrapper {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: -80px;
+        padding: 0 20px;
+    }
+    .profile-avatar-large {
+        margin-bottom: 20px;
+    }
+    .profile-details {
+        margin: 15px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .profile-actions {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .profile-actions .btn {
+        min-width: 220px;
+    }
+    .edit-avatar-btn {
+        z-index: 2;
+    }
+}
+
+/* ================= CHAT APPLICATION UI ================= */
 .chat-wrapper {
     flex: 1; display: flex; border-radius: var(--radius-lg); 
     overflow: hidden; margin-bottom: 20px;
@@ -418,15 +500,27 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 @keyframes gradientBg { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
 .profile-info-wrapper { 
-    padding: 0 40px; display: flex; justify-content: space-between; 
-    align-items: flex-end; margin-top: -60px; flex-wrap: wrap; gap: 20px; 
+    padding: 60px 40px 35px; display: grid; grid-template-columns: auto 1fr auto;
+    align-items: flex-start; margin-top: -20px; gap: 45px; 
 }
 .profile-avatar-large { 
-    position: relative; width: 140px; height: 140px; 
-    border-radius: 30px; border: 6px solid var(--bg-app); 
+    position: relative; width: 120px; height: 120px; 
+    border-radius: 28px; border: 6px solid var(--bg-app); 
     box-shadow: var(--shadow-md); background: white; 
 }
-.profile-avatar-large img { width: 100%; height: 100%; border-radius: 24px; object-fit: cover; }
+.profile-avatar-large img { width: 100%; height: 100%; border-radius: 22px; object-fit: cover; }
+.profile-details { 
+    display: flex; flex-direction: column; gap: 20px; align-items: flex-start; flex: 1; min-width: 0;
+}
+.profile-main-info { display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; margin-top: 4px; }
+.profile-details h2 { font-size: 2.4rem; color: var(--secondary); font-weight: 800; letter-spacing: -0.5px; margin: 0; padding-top: 0; }
+.profile-details p { margin: 0; color: var(--text-muted); line-height: 1.6; font-size: 1.05rem; }
+.profile-details .profile-email { font-weight: 500; }
+.profile-details .profile-phone { font-weight: 600; margin-top: 8px; }
+.profile-bio-box { padding: 2px 0; max-width: 100%; }
+.profile-bio { margin: 0; color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; font-weight: 400; }
+.profile-actions { display: flex; align-items: flex-start; padding-top: 16px; }
+.profile-actions .btn { min-width: 168px; padding: 11px 28px; font-weight: 600; font-size: 0.96rem; }
 .edit-avatar-btn { 
     position: absolute; bottom: -5px; right: -5px; width: 40px; height: 40px; 
     border-radius: 12px; background: var(--primary); color: white; 
@@ -438,10 +532,6 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
     position: absolute; top: 10px; right: 10px; width: 15px; height: 15px;
     background: var(--success); border-radius: 50%; border: 3px solid white;
 }
-
-.profile-details { flex: 1; padding-bottom: 10px; margin-left: 10px; }
-.profile-details h2 { font-size: 2.2rem; color: var(--secondary); font-weight: 800; letter-spacing: -0.5px;}
-.profile-actions { padding-bottom: 10px; }
 
 /* Tabs Profil */
 .profile-tabs { 
@@ -479,25 +569,64 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 .stats-bento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .flex-1 { display: flex; flex-direction: column; height: 100%; }
 
-.activity-list { display: flex; flex-direction: column; gap: 15px; }
+.activity-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; align-items: start; }
 .activity-card { 
-    display: flex; gap: 15px; padding: 15px; border-radius: 16px; 
-    background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border);
-    transition: var(--transition); cursor: pointer;
+    display: flex !important; flex-direction: column !important; gap: 14px; padding: 18px; border-radius: 20px; 
+    width: 100%; max-width: 100%; margin: 0; background: white; border: 1px solid var(--border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; cursor: pointer;
+    position: relative; box-shadow: var(--shadow-sm); overflow: hidden;
 }
-.activity-card:hover { background: white; transform: translateX(5px); box-shadow: var(--shadow-sm); }
-.activity-card img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; }
-.activity-info { flex: 1; }
-.activity-info h4 { font-size: 1rem; color: var(--secondary); margin-bottom: 5px; }
-.activity-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 10px; align-items: center; }
+.activity-card:hover { 
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-light);
+}
+.activity-card:hover img {
+    transform: scale(1.05);
+}
+.activity-card img { 
+    width: 100%; height: 180px; object-fit: cover; 
+    border-radius: 16px; border: 1px solid var(--border); transition: transform 0.3s ease;
+}
+.activity-card-content { display: flex; flex-direction: column; gap: 12px; padding: 10px 0; }
+.activity-info { display: flex; flex-direction: column; gap: 6px; }
+.activity-info h4 { 
+    font-size: 1.15rem; color: var(--secondary); margin: 0; font-weight: 700;
+}
+.activity-info .activity-type { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.activity-meta { 
+    display: grid; gap: 8px; font-size: 0.9rem; color: var(--text-muted);
+}
+.activity-meta span { display: inline-flex; align-items: center; gap: 8px; }
+.activity-meta span i { color: var(--primary); width: 18px; text-align: center; }
+.activity-description {
+    font-size: 0.95rem; color: var(--text-main); line-height: 1.5; margin-top: 4px;
+}
+.activity-status {
+    position: absolute; top: 18px; right: 18px; 
+    padding: 6px 14px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.activity-status.found {
+    background: rgba(16, 185, 129, 0.12); color: var(--success);
+}
+.activity-status.lost {
+    background: rgba(239, 68, 68, 0.12); color: var(--danger);
+}
+@media (max-width: 860px) {
+    .activity-card img { height: 180px; }
+    .activity-status { position: static; align-self: flex-start; margin-top: 10px; }
+}
 
 /* Responsive Profile */
 @media (max-width: 992px) {
-    .profile-info-wrapper { flex-direction: column; align-items: center; text-align: center; margin-top: -80px; padding: 0 20px; }
-    .profile-details { margin: 15px 0; display: flex; flex-direction: column; align-items: center; }
+    .profile-info-wrapper { flex-direction: column; align-items: center; text-align: center; margin-top: -80px; padding: 25px 20px 20px; gap: 20px; }
+    .profile-details { width: 100%; gap: 18px; }
+    .profile-main-info { align-items: center; }
+    .profile-details h2 { text-align: center; }
+    .profile-bio-box { width: 100%; }
+    .profile-actions { justify-content: center; width: 100%; }
     .profile-tabs { padding: 15px 20px 0; justify-content: center; }
     .profile-bento-grid { grid-template-columns: 1fr; }
     .stats-bento { grid-template-columns: 1fr; }
-}
-
 }

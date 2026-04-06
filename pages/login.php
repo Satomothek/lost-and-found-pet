@@ -39,7 +39,7 @@ requireGuest();
             
             <h2 class="text-center" style="font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 5px;">
                 Welcome
-            </h2>
+            </h2>   
             <p class="text-center text-muted" style="margin-bottom: 35px;">
                 Masuk untuk mengakses jaringan PetFounds.
             </p>

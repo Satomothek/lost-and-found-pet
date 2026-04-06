@@ -10,6 +10,8 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'petfounds_db');
 
+date_default_timezone_set('Asia/Jakarta');
+
 // Error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 0);

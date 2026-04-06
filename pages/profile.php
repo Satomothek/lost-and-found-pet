@@ -80,7 +80,7 @@ $currentUser = getCurrentUser();
                     <div class="profile-info-wrapper">
                         <div class="profile-avatar-large">
                             <div class="online-indicator"></div>
-                            <img id="profile-avatar" src="<?php echo htmlspecialchars($currentUser['avatar']); ?>" alt="Avatar">
+                            <img id="profile-avatar" src="<?php echo htmlspecialchars(normalizeAssetUrl($currentUser['avatar'])); ?>" alt="Avatar">
                             <button id="edit-avatar-btn" class="edit-avatar-btn" title="Ubah Avatar">
                                 <i class="fa-solid fa-camera"></i>
                             </button>
@@ -88,8 +88,18 @@ $currentUser = getCurrentUser();
                         </div>
                         
                         <div class="profile-details">
-                            <h2><?php echo htmlspecialchars($currentUser['name']); ?></h2>
-                            <p class="text-muted"><?php echo htmlspecialchars($currentUser['email']); ?></p>
+                            <div class="profile-main-info">
+                                <h2><?php echo htmlspecialchars($currentUser['name']); ?></h2>
+                                <p class="profile-email"><?php echo htmlspecialchars($currentUser['email']); ?></p>
+                                <?php if (!empty($currentUser['phone'])): ?>
+                                    <p class="profile-phone"><?php echo htmlspecialchars($currentUser['phone']); ?></p>
+                                <?php endif; ?>
+                            </div>
+                            <?php if (!empty($currentUser['bio'])): ?>
+                                <div class="profile-bio-box">
+                                    <p class="profile-bio"><?php echo htmlspecialchars($currentUser['bio']); ?></p>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         
                         <div class="profile-actions">
@@ -210,21 +220,26 @@ $currentUser = getCurrentUser();
 
             container.innerHTML = reports.map(report => {
                 const isFound = report.type === 'found';
-                const badgeClass = isFound ? 'text-success' : 'text-danger';
-                const statusText = isFound ? 'Menemukan Hewan' : 'Kehilangan Hewan';
+                const badgeClass = isFound ? 'found' : 'lost';
+                const statusText = isFound ? 'Ditemukan' : 'Hilang';
+                const petName = report.petName !== 'Unknown' ? report.petName : 'Seekor ' + report.species;
+                const petType = report.species ? report.species : 'Jenis tidak diketahui';
                 
                 return `
                 <div class="activity-card">
-                    <img src="${report.image}" alt="Pet">
-                    <div class="activity-info">
-                        <h4>${report.petName}</h4>
-                        <p class="activity-meta">
-                            <span class="${badgeClass}" style="color: ${isFound ? 'var(--success)' : 'var(--danger)'};">${statusText}</span>
-                            <span>${report.location}</span>
-                            <span>${report.date}</span>
-                        </p>
-                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 8px;">${report.description.substring(0, 100)}...</p>
+                    <img src="${report.image}" alt="${petName}">
+                    <div class="activity-card-content">
+                        <div class="activity-info">
+                            <h4>${petName}</h4>
+                            <span class="activity-type">${petType}</span>
+                        </div>
+                        <div class="activity-meta">
+                            <span><i class="fa-solid fa-map-marker-alt"></i> ${report.location}</span>
+                            <span><i class="fa-solid fa-calendar"></i> ${report.date}</span>
+                        </div>
+                        <p class="activity-description">${report.description ? report.description.substring(0, 100) + (report.description.length > 100 ? '...' : '') : ''}</p>
                     </div>
+                    <div class="activity-status ${badgeClass}">${statusText}</div>
                 </div>
             `;
             }).join('');
@@ -239,6 +254,8 @@ $currentUser = getCurrentUser();
                 if (data.status === 'success') {
                     const profile = data.data;
                     document.getElementById('stat-reports').textContent = profile.reports_count;
+                    document.getElementById('stat-lost').textContent = profile.lost_count ?? 0;
+                    document.getElementById('stat-found').textContent = profile.found_count ?? 0;
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);

@@ -18,7 +18,9 @@ function getCurrentUser() {
             'id' => $_SESSION['user_id'],
             'name' => $_SESSION['user_name'],
             'email' => $_SESSION['user_email'],
-            'avatar' => $_SESSION['user_avatar'] ?? 'https://i.pravatar.cc/150?img=68'
+            'avatar' => $_SESSION['user_avatar'] ?? 'https://i.pravatar.cc/150?img=68',
+            'phone' => $_SESSION['user_phone'] ?? '',
+            'bio' => $_SESSION['user_bio'] ?? ''
         ];
     }
     return null;
@@ -37,7 +39,7 @@ function login($connection, $email, $password) {
     }
     
     // Get user from database
-    $query = "SELECT id, name, email, password, avatar_url FROM users WHERE email = ?";
+    $query = "SELECT id, name, email, password, avatar_url, phone, bio FROM users WHERE email = ?";
     $user = fetchOne($connection, $query, [$email]);
     
     if (!$user) {
@@ -54,6 +56,8 @@ function login($connection, $email, $password) {
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_avatar'] = $user['avatar_url'];
+        $_SESSION['user_phone'] = $user['phone'] ?? '';
+        $_SESSION['user_bio'] = $user['bio'] ?? '';
         $_SESSION['login_time'] = time();
         
         return [
@@ -114,6 +118,8 @@ function register($connection, $name, $email, $password, $passwordConfirm) {
         $_SESSION['user_name'] = $name;
         $_SESSION['user_email'] = $email;
         $_SESSION['user_avatar'] = 'https://i.pravatar.cc/150?img=68';
+        $_SESSION['user_phone'] = '';
+        $_SESSION['user_bio'] = '';
         
         return [
             'success' => true,
@@ -151,6 +157,12 @@ function updateUserProfile($connection, $userId, $data) {
     $query = "UPDATE users SET name = ?, bio = ?, phone = ? WHERE id = ?";
     $result = executeQuery($connection, $query, [$name, $bio, $phone, $userId]);
     
+    if ($result['success']) {
+        $_SESSION['user_name'] = $name;
+        $_SESSION['user_phone'] = $phone;
+        $_SESSION['user_bio'] = $bio;
+    }
+
     return $result['success'];
 }
 
