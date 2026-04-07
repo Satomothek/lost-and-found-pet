@@ -26,7 +26,9 @@ CREATE TABLE IF NOT EXISTS pet_reports (
     type ENUM('lost', 'found') NOT NULL,
     pet_name VARCHAR(100),
     species VARCHAR(50) NOT NULL,
+    species_detail VARCHAR(100) NULL,
     location VARCHAR(255) NOT NULL,
+    event_date DATE NULL,
     description TEXT NOT NULL,
     image_url VARCHAR(255),
     likes_count INT DEFAULT 0,
@@ -36,7 +38,8 @@ CREATE TABLE IF NOT EXISTS pet_reports (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_type (type),
-    INDEX idx_created_at (created_at)
+    INDEX idx_created_at (created_at),
+    INDEX idx_event_date (event_date)
 );
 
 -- ========== LIKES TABLE ==========

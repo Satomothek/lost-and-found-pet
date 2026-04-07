@@ -59,7 +59,7 @@ requireGuest();
             </form>
             
             <p class="text-center text-muted" style="margin-top: 25px; font-size: 0.9rem;">
-                Belum punya akun? <a href="register.php" class="text-primary font-bold">Daftar</a>
+                Belum punya akun? <a href="register.php" class="text-primary font-bold register-link">Daftar</a>
             </p>
         </div>
     </main>

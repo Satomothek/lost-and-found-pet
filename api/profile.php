@@ -180,13 +180,48 @@ elseif ($method === 'GET' && $action === 'reports') {
             'location' => $report['location'],
             'description' => $report['description'],
             'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
-            'date' => timeAgo($report['created_at'])
+            'date' => timeAgo($report['created_at']),
+            'eventDate' => $report['event_date'] ? date('d M Y', strtotime($report['event_date'])) : null
         ];
     }, $reports);
     
     successResponse('Laporan user berhasil diambil', [
         'reports' => $reports,
         'page' => $pagination['page']
+    ]);
+}
+
+// ========== GET USER BOOKMARKS ==========
+elseif ($method === 'GET' && $action === 'bookmarks') {
+    $query = "SELECT pr.*
+              FROM pet_reports pr
+              JOIN likes l ON l.report_id = pr.id
+              WHERE l.user_id = ? AND pr.status = 'active'
+              ORDER BY l.created_at DESC";
+
+    $bookmarks = fetchAll($connection, $query, [$currentUser['id']]);
+
+    if (!$bookmarks) {
+        $bookmarks = [];
+    }
+
+    $bookmarks = array_map(function($report) {
+        return [
+            'id' => $report['id'],
+            'type' => $report['type'],
+            'petName' => $report['pet_name'],
+            'species' => $report['species'],
+            'location' => $report['location'],
+            'description' => $report['description'],
+            'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
+            'date' => timeAgo($report['created_at']),
+            'eventDate' => $report['event_date'] ? date('d M Y', strtotime($report['event_date'])) : null,
+            'isLiked' => true
+        ];
+    }, $bookmarks);
+
+    successResponse('Bookmarks user berhasil diambil', [
+        'bookmarks' => $bookmarks
     ]);
 }
 

@@ -72,9 +72,16 @@ $currentUser = getCurrentUser();
 
         <!-- Main Content -->
         <main class="main-content page-pt">
-            <div class="chat-wrapper" style="margin: 0 20px;">
-                <!-- Chat List Panel -->
-                <div class="chat-list-panel" id="chat-contacts-panel">
+            <div class="container-fluid">
+                <div class="page-header-panel">
+                    <div>
+                        <h1>Pesan</h1>
+                        <p>Pilih kontak untuk mulai chat dan kelola percakapan secara real time dengan mudah.</p>
+                    </div>
+                </div>
+                <div class="chat-wrapper">
+                    <!-- Chat List Panel -->
+                    <div class="chat-list-panel" id="chat-contacts-panel">
                     <div class="chat-contacts" id="chat-contact-list">
                         <!-- Loaded via JavaScript -->
                     </div>

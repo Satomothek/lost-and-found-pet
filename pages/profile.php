@@ -114,6 +114,9 @@ $currentUser = getCurrentUser();
                         <button class="tab-btn active" data-tab="activity">
                             <i class="fa-solid fa-list"></i> Aktivitas
                         </button>
+                        <button class="tab-btn" data-tab="bookmarks">
+                            <i class="fa-solid fa-bookmark"></i> Bookmarks
+                        </button>
                         <button class="tab-btn" data-tab="stats">
                             <i class="fa-solid fa-chart-bar"></i> Statistik
                         </button>
@@ -124,11 +127,25 @@ $currentUser = getCurrentUser();
                 <div style="margin-top: 30px;">
                     <!-- Activity Tab -->
                     <div id="activity-tab" class="profile-tab-content">
-                        <div style="margin-bottom: 20px;">
-                            <h3 style="color: var(--secondary); margin-bottom: 15px;">Laporan Terbaru</h3>
+                        <div class="profile-activity-section">
+                            <div class="profile-activity-header">
+                                <h3>Laporan Terbaru</h3>
+                            </div>
+                            <div class="activity-list" id="profile-activity-list">
+                                <!-- Loaded via JavaScript -->
+                            </div>
                         </div>
-                        <div class="activity-list" id="profile-activity-list">
-                            <!-- Loaded via JavaScript -->
+                    </div>
+
+                    <!-- Bookmarks Tab -->
+                    <div id="bookmarks-tab" class="profile-tab-content" style="display: none;">
+                        <div class="profile-activity-section">
+                            <div class="profile-activity-header">
+                                <h3>Bookmarks</h3>
+                            </div>
+                            <div class="activity-list" id="profile-bookmarks-list">
+                                <!-- Loaded via JavaScript -->
+                            </div>
                         </div>
                     </div>
 
@@ -181,6 +198,16 @@ $currentUser = getCurrentUser();
         </div>
     </div>
 
+    <!-- Report Detail Modal -->
+    <div class="modal-overlay" id="report-detail-modal">
+        <div class="modal-content">
+            <button id="close-report-modal" class="btn-close-modal">
+                <i class="fa-solid fa-times"></i>
+            </button>
+            <div id="report-modal-body"></div>
+        </div>
+    </div>
+
     <script src="../js/functions.js"></script>
     <script>
         const currentUser = <?php echo json_encode($currentUser); ?>;
@@ -192,6 +219,7 @@ $currentUser = getCurrentUser();
             setupProfileForm();
             setupAvatarUpload();
             setupTabSwitching();
+            setupReportDetailModal();
             setupLogout();
         });
 
@@ -202,19 +230,35 @@ $currentUser = getCurrentUser();
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    renderActivity(data.data.reports || []);
+                    renderActivity(data.data.reports || [], 'profile-activity-list');
                 }
             } catch (error) {
                 showToast('Gagal memuat aktivitas: ' + error.message, 'error');
             }
         }
 
+        // Load profile bookmarks
+        async function loadProfileBookmarks() {
+            try {
+                const response = await fetch('../api/profile.php?action=bookmarks');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    renderActivity(data.data.bookmarks || [], 'profile-bookmarks-list');
+                }
+            } catch (error) {
+                showToast('Gagal memuat bookmarks: ' + error.message, 'error');
+            }
+        }
+
         // Render activity
-        function renderActivity(reports) {
-            const container = document.getElementById('profile-activity-list');
+        function renderActivity(reports, containerId = 'profile-activity-list') {
+            const container = document.getElementById(containerId);
+            const isBookmarkTab = containerId === 'profile-bookmarks-list';
             
             if (!reports || reports.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Belum ada laporan</div>';
+                const emptyText = isBookmarkTab ? 'Belum ada bookmarks' : 'Belum ada laporan';
+                container.innerHTML = '<div class="profile-empty-wrapper"><div class="profile-empty-state">' + emptyText + '</div></div>';
                 return;
             }
 
@@ -222,24 +266,51 @@ $currentUser = getCurrentUser();
                 const isFound = report.type === 'found';
                 const badgeClass = isFound ? 'found' : 'lost';
                 const statusText = isFound ? 'Ditemukan' : 'Hilang';
-                const petName = report.petName !== 'Unknown' ? report.petName : 'Seekor ' + report.species;
+                const petName = report.petName && report.petName !== 'Unknown' && report.petName.trim() !== '' ? report.petName : report.species + ' Tanpa Nama';
                 const petType = report.species ? report.species : 'Jenis tidak diketahui';
-                
+                const description = report.description ? report.description.substring(0, 120) + (report.description.length > 120 ? '...' : '') : '';
+                const eventDate = report.eventDate ? report.eventDate : null;
+                const createdAt = report.createdRelative || report.date || 'Waktu tidak diketahui';
+
                 return `
-                <div class="activity-card">
-                    <img src="${report.image}" alt="${petName}">
-                    <div class="activity-card-content">
-                        <div class="activity-info">
-                            <h4>${petName}</h4>
-                            <span class="activity-type">${petType}</span>
-                        </div>
-                        <div class="activity-meta">
-                            <span><i class="fa-solid fa-map-marker-alt"></i> ${report.location}</span>
-                            <span><i class="fa-solid fa-calendar"></i> ${report.date}</span>
-                        </div>
-                        <p class="activity-description">${report.description ? report.description.substring(0, 100) + (report.description.length > 100 ? '...' : '') : ''}</p>
+                <div class="feed-card" data-report-id="${report.id}" onclick="openReportDetail(${report.id})">
+                    <div class="card-img-box">
+                        <img src="${report.image}" alt="${petName}">
+                        <span class="card-badge badge-${badgeClass}">${statusText}</span>
                     </div>
-                    <div class="activity-status ${badgeClass}">${statusText}</div>
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <h3>${petName}</h3>
+                            <span class="card-label">${petType}</span>
+                        </div>
+                        <p class="card-description">${description}</p>
+                        <div class="card-info-grid">
+                            <div class="info-item info-event"><i class="fa-solid fa-calendar"></i> ${eventDate || 'Tanggal tidak tersedia'}</div>
+                            <div class="info-item"><i class="fa-solid fa-map-marker-alt"></i> ${report.location || 'Lokasi tidak tersedia'}</div>
+                            <div class="info-item info-created"><i class="fa-solid fa-clock"></i> ${createdAt}</div>
+                            <div class="info-item info-spacer">&nbsp;</div>
+                        </div>
+                    </div>
+                    ${isBookmarkTab ? `
+                        <button class="btn-like action-btn bookmark-action liked" title="Hapus bookmark" onclick="toggleBookmark(event, ${report.id})">
+                            <i class="fa-solid fa-bookmark"></i>
+                        </button>
+                    ` : `
+                        <div class="activity-options" onclick="toggleActivityMenu(event, ${report.id})">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </div>
+                        <div class="activity-dropdown" id="dropdown-${report.id}">
+                            <div class="activity-dropdown-item" onclick="editReport(event, ${report.id})">
+                                <i class="fa-solid fa-edit"></i> Edit
+                            </div>
+                            <div class="activity-dropdown-item" onclick="markAsDone(event, ${report.id})">
+                                <i class="fa-solid fa-check"></i> Mark as Done
+                            </div>
+                            <div class="activity-dropdown-item danger" onclick="deleteReport(event, ${report.id})">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </div>
+                        </div>
+                    `}
                 </div>
             `;
             }).join('');
@@ -355,6 +426,12 @@ $currentUser = getCurrentUser();
                     // Add active to clicked tab
                     btn.classList.add('active');
                     document.getElementById(tabName + '-tab').style.display = 'block';
+
+                    if (tabName === 'activity') {
+                        loadProfileActivity();
+                    } else if (tabName === 'bookmarks') {
+                        loadProfileBookmarks();
+                    }
                 });
             });
         }
@@ -373,6 +450,270 @@ $currentUser = getCurrentUser();
                     showToast('Gagal logout: ' + error.message, 'error');
                 }
             });
+        }
+
+        // Activity card options functions
+        function toggleActivityMenu(event, reportId) {
+            event.stopPropagation();
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.activity-dropdown').forEach(dropdown => {
+                if (dropdown.id !== `dropdown-${reportId}`) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            // Toggle current dropdown
+            const dropdown = document.getElementById(`dropdown-${reportId}`);
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.activity-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+        });
+
+        // Unbookmark from bookmarks list
+        async function toggleBookmark(event, reportId) {
+            event.stopPropagation();
+
+            try {
+                const response = await fetch('../api/likes.php', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ report_id: reportId })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showToast('Bookmark dihapus', 'success');
+                    loadProfileBookmarks();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('Gagal mengupdate bookmark: ' + error.message, 'error');
+            }
+        }
+
+        // Open report detail modal from profile
+        async function openReportDetail(reportId) {
+            try {
+                const response = await fetch(`../api/reports.php?id=${reportId}`, {
+                    credentials: 'same-origin'
+                });
+
+                const data = await response.json();
+                if (data.status !== 'success') {
+                    showToast(data.message || 'Gagal memuat detail laporan', 'error');
+                    return;
+                }
+
+                renderReportDetail(data.data);
+                document.getElementById('report-detail-modal').classList.add('show');
+            } catch (error) {
+                showToast('Gagal memuat detail laporan: ' + error.message, 'error');
+            }
+        }
+
+        function renderReportDetail(report) {
+            const container = document.getElementById('report-modal-body');
+            const typeText = report.type === 'found' ? 'DITEMUKAN' : 'HILANG';
+            const badgeClass = report.type === 'found' ? 'badge-found' : 'badge-lost';
+            const petName = report.petName && report.petName !== 'Unknown' && report.petName.trim() !== '' ? report.petName : report.species + ' Tanpa Nama';
+            const speciesDetail = report.speciesDetail ? ` (${report.speciesDetail})` : '';
+            const createdUpdatedText = report.updatedAt ? `Diperbarui ${report.updatedAt}` : `Dipublikasikan ${report.createdAt}`;
+
+            container.innerHTML = `
+                <div class="modal-report-detail">
+                    <div class="modal-header-section">
+                        <div class="modal-image-container">
+                            <img src="${report.image}" alt="${petName}" class="modal-pet-image">
+                            <div class="modal-badge ${badgeClass}">${typeText}</div>
+                        </div>
+                        <div class="modal-info-section">
+                            <h2 class="modal-pet-name">${petName}</h2>
+                            <p class="modal-pet-species">${report.species}${speciesDetail}</p>
+                            <div class="modal-meta-info">
+                                <div class="modal-meta-item">
+                                    <i class="fa-solid fa-map-marker-alt"></i>
+                                    <span>${report.location || 'Lokasi tidak tersedia'}</span>
+                                </div>
+                                <div class="modal-meta-item">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    <span>${report.eventDate || 'Tanggal tidak diketahui'}</span>
+                                </div>
+                                <div class="modal-meta-item">
+                                    <i class="fa-solid fa-clock"></i>
+                                    <span>${createdUpdatedText}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-description-section">
+                        <h3>Detail Laporan</h3>
+                        <p class="modal-description">${report.description.replace(/\n/g, '<br>')}</p>
+                    </div>
+                    <div class="modal-author-section">
+                        <div class="modal-author-info">
+                            <img src="${report.authorImg}" alt="Author" class="modal-author-avatar">
+                            <div class="modal-author-details">
+                                <span class="modal-author-name">${report.author}</span>
+                                <span class="modal-author-role">Pelapor</span>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            ${document.querySelector('.tab-btn.active')?.dataset.tab === 'activity' ? `
+                                <div class="modal-action-wrapper">
+                                    <button class="btn btn-icon modal-action-btn" title="Opsi laporan" onclick="toggleModalActionMenu(event, ${report.id})">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <div class="modal-action-dropdown" id="modal-dropdown-${report.id}">
+                                        <div class="modal-action-dropdown-item" onclick="editReport(event, ${report.id})">
+                                            <i class="fa-solid fa-edit"></i> Edit
+                                        </div>
+                                        <div class="modal-action-dropdown-item" onclick="markAsDone(event, ${report.id})">
+                                            <i class="fa-solid fa-check"></i> Mark as Done
+                                        </div>
+                                        <div class="modal-action-dropdown-item danger" onclick="deleteReport(event, ${report.id})">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : `
+                                <button class="btn btn-like action-btn ${report.isLiked ? 'liked' : ''}" title="Simpan ke Bookmarks" onclick="toggleBookmarkModal(event, ${report.id})">
+                                    <i class="${report.isLiked ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+                                    <span>${report.likes}</span>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function toggleBookmarkModal(event, reportId) {
+            event.stopPropagation();
+            try {
+                const response = await fetch('../api/likes.php', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ report_id: reportId })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    openReportDetail(reportId);
+                    loadProfileBookmarks();
+                    loadProfileActivity();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('Gagal mengupdate bookmark: ' + error.message, 'error');
+            }
+        }
+
+        function setupReportDetailModal() {
+            const modal = document.getElementById('report-detail-modal');
+            const closeButton = document.getElementById('close-report-modal');
+
+            closeButton.addEventListener('click', () => {
+                modal.classList.remove('show');
+                document.querySelectorAll('.modal-action-dropdown.show').forEach(dropdown => dropdown.classList.remove('show'));
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                    document.querySelectorAll('.modal-action-dropdown.show').forEach(dropdown => dropdown.classList.remove('show'));
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.modal-action-wrapper')) {
+                    document.querySelectorAll('.modal-action-dropdown.show').forEach(dropdown => dropdown.classList.remove('show'));
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    modal.classList.remove('show');
+                    document.querySelectorAll('.modal-action-dropdown.show').forEach(dropdown => dropdown.classList.remove('show'));
+                }
+            });
+        }
+
+        function toggleModalActionMenu(event, reportId) {
+            event.stopPropagation();
+            const dropdown = document.getElementById(`modal-dropdown-${reportId}`);
+            if (!dropdown) return;
+            document.querySelectorAll('.modal-action-dropdown').forEach(menu => {
+                if (menu !== dropdown) {
+                    menu.classList.remove('show');
+                }
+            });
+            dropdown.classList.toggle('show');
+        }
+
+        // Edit report function
+        async function editReport(event, reportId) {
+            event.stopPropagation();
+            window.location.href = `post_report.php?page=create&edit=${reportId}`;
+        }
+
+        // Mark as done function
+        async function markAsDone(event, reportId) {
+            event.stopPropagation();
+            try {
+                const response = await fetch(`../api/reports.php?id=${reportId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status: 'completed' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showToast('Laporan berhasil ditandai sebagai selesai', 'success');
+                    loadProfileActivity(); // Reload activity
+                } else {
+                    showToast(data.message || 'Gagal menandai laporan sebagai selesai', 'error');
+                }
+            } catch (error) {
+                showToast('Gagal menandai laporan sebagai selesai: ' + error.message, 'error');
+            }
+        }
+
+        // Delete report function
+        async function deleteReport(event, reportId) {
+            event.stopPropagation();
+            try {
+                const response = await fetch(`../api/reports.php?action=delete&id=${reportId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showToast('Laporan berhasil dihapus', 'success');
+                    loadProfileActivity(); // Reload activity
+                } else {
+                    showToast(data.message || 'Gagal menghapus laporan', 'error');
+                }
+            } catch (error) {
+                showToast('Gagal menghapus laporan: ' + error.message, 'error');
+            }
         }
     </script>
 </body>

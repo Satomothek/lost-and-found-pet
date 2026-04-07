@@ -27,7 +27,13 @@ let appData = JSON.parse(localStorage.getItem(DB_KEY)) || dummyData;
 localStorage.setItem(DB_KEY, JSON.stringify(appData));
 let currentUser = JSON.parse(localStorage.getItem(USER_KEY)) || null;
 
-// --- global handlers ---
+// --- Helper Functions ---
+function getPetDisplayName(petName, species) {
+    if (petName && petName !== 'Unknown' && petName.trim() !== '') {
+        return petName;
+    }
+    return species + ' Tanpa Nama';
+}
 function checkAuth() {
     const publicPages = ['index.html', '', 'login.html'];
     const currentPage = window.location.pathname.split("/").pop();
@@ -102,7 +108,7 @@ function renderFeed(container, data, searchQuery = '') {
                 <img src="${post.image}" alt="Pet Image" loading="lazy">
             </div>
             <div class="card-body">
-                <h3>${post.petName !== 'Unknown' ? post.petName : `Seekor ${post.species}`}</h3>
+                <h3>${getPetDisplayName(post.petName, post.species)}</h3>
                 <div class="card-meta"><i class="fa-solid fa-map-marker-alt"></i> ${post.location}</div>
             </div>
             <div class="card-footer">
@@ -141,7 +147,7 @@ function openModal(post) {
     const isFound = post.type === 'found';
     modalContent.innerHTML = `
         <img src="${post.image}" style="width:100%; height:300px; object-fit:cover; border-radius: 12px; margin-bottom: 20px;">
-        <h2 style="font-size: 1.8rem; color: var(--secondary); font-weight:800;">${post.petName !== 'Unknown' ? post.petName : `Seekor ${post.species}`}</h2>
+        <h2 style="font-size: 1.8rem; color: var(--secondary); font-weight:800;">${getPetDisplayName(post.petName, post.species)}</h2>
         <span class="card-badge ${isFound?'badge-found':'badge-lost'}" style="position:relative; top:0; left:0; display:inline-block; margin: 10px 0;">${isFound ? 'FOUND' : 'LOST'}</span>
         <div style="color: var(--primary); font-weight: 600; margin-bottom: 20px;"><i class="fa-solid fa-map-location-dot"></i> ${post.location}</div>
         <p style="color: var(--text-muted); line-height: 1.8; margin-bottom: 25px;">${post.desc}</p>
@@ -202,7 +208,7 @@ function setupReportForm() {
             id: Date.now(),
             type: document.querySelector('input[name="reportType"]:checked').value,
             author: currentUser.name, authorImg: 'https://i.pravatar.cc/150?img=68',
-            petName: document.getElementById('r-name').value || 'Unknown',
+            petName: document.getElementById('r-name').value.trim() || null,
             species: document.getElementById('r-species').value,
             location: document.getElementById('r-location').value,
             date: 'Baru saja', desc: document.getElementById('r-desc').value,
@@ -399,7 +405,7 @@ function renderProfileActivity() {
         const isFound = post.type === 'found';
         const badgeClass = isFound ? 'text-success' : 'text-danger';
         const statusText = isFound ? 'Menemukan Hewan' : 'Kehilangan Hewan';
-        const title = post.petName !== 'Unknown' ? post.petName : `Seekor ${post.species}`;
+        const title = getPetDisplayName(post.petName, post.species);
 
         activityContainer.innerHTML += `
             <div class="activity-card" onclick="openModalFromProfile(${post.id})">
