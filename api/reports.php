@@ -133,7 +133,8 @@ if ($method === 'GET') {
             'description' => $report['description'],
             'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
             'likes' => intval($report['likes']),
-            'isLiked' => boolval($report['isLiked'])
+            'isLiked' => boolval($report['isLiked']),
+            'user_id' => $report['user_id']
         ];
     }, $reports);
     

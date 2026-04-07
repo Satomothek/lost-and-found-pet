@@ -17,6 +17,15 @@ $action = $_GET['action'] ?? '';
 
 // ========== GET CHAT CONTACTS ==========
 if ($method === 'GET' && $action === 'contacts') {
+    $createBlockTable = "CREATE TABLE IF NOT EXISTS user_blocks (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        blocker_id INT NOT NULL,
+        blocked_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_block (blocker_id, blocked_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    executeQuery($connection, $createBlockTable);
+
     $query = "SELECT 
                 CASE 
                     WHEN sender_id = ? THEN receiver_id
@@ -24,21 +33,26 @@ if ($method === 'GET' && $action === 'contacts') {
                 END as contact_id,
                 users.name as contactName,
                 users.avatar_url as avatar,
+                users.bio as bio,
+                users.email as email,
+                users.phone as phone,
                 MAX(messages.message) as text,
                 DATE_FORMAT(MAX(messages.created_at), '%H:%i') as time,
-                MAX(messages.created_at) as last_time
+                MAX(messages.created_at) as last_time,
+                IF(EXISTS(SELECT 1 FROM user_blocks WHERE blocker_id = ? AND blocked_id = users.id), 1, 0) as isBlocked
               FROM messages
-              JOIN users ON (
+              JOIN users ON users.id = (
                 CASE 
-                    WHEN sender_id = ? THEN receiver_id = users.id
-                    ELSE sender_id = users.id
+                    WHEN sender_id = ? THEN receiver_id
+                    ELSE sender_id
                 END
               )
-              WHERE sender_id = ? OR receiver_id = ?
+              WHERE (sender_id = ? OR receiver_id = ?)
               GROUP BY contact_id
               ORDER BY last_time DESC";
     
     $contacts = fetchAll($connection, $query, [
+        $currentUser['id'],
         $currentUser['id'],
         $currentUser['id'],
         $currentUser['id'],
@@ -48,6 +62,12 @@ if ($method === 'GET' && $action === 'contacts') {
     if (!$contacts) {
         $contacts = [];
     }
+
+    foreach ($contacts as &$contact) {
+        $contact['avatar'] = normalizeAssetUrl($contact['avatar']);
+        $contact['isBlocked'] = !empty($contact['isBlocked']);
+    }
+    unset($contact);
     
     successResponse('Chat contacts berhasil diambil', ['contacts' => $contacts]);
 }
@@ -91,6 +111,120 @@ elseif ($method === 'GET' && $action === 'history') {
     successResponse('Chat history berhasil diambil', ['messages' => $messages]);
 }
 
+// ========== GET USER PROFILE ==========
+elseif ($method === 'GET' && $action === 'user') {
+    $contactId = intval($_GET['user_id'] ?? 0);
+    if (!$contactId) {
+        errorResponse('User ID tidak valid', null, 400);
+    }
+
+    $createTableQuery = "CREATE TABLE IF NOT EXISTS user_blocks (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        blocker_id INT NOT NULL,
+        blocked_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_block (blocker_id, blocked_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    executeQuery($connection, $createTableQuery);
+
+    $query = "SELECT id as contact_id, name as contactName, avatar_url as avatar, bio, phone FROM users WHERE id = ?";
+    $contact = fetchOne($connection, $query, [$contactId]);
+
+    if (!$contact) {
+        errorResponse('User tidak ditemukan', null, 404);
+    }
+
+    $contact['avatar'] = normalizeAssetUrl($contact['avatar']);
+    $blockedCheck = fetchOne($connection, "SELECT 1 FROM user_blocks WHERE blocker_id = ? AND blocked_id = ?", [$currentUser['id'], $contactId]);
+    $contact['isBlocked'] = !empty($blockedCheck);
+
+    successResponse('Profile user berhasil diambil', ['contact' => $contact]);
+}
+
+// ========== DELETE CHAT HISTORY ==========
+elseif ($method === 'POST' && $action === 'delete') {
+    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+    $contactId = intval($input['contact_id'] ?? 0);
+    if (!$contactId) {
+        errorResponse('Contact ID tidak valid', null, 400);
+    }
+
+    $query = "DELETE FROM messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)";
+    $result = executeQuery($connection, $query, [
+        $currentUser['id'],
+        $contactId,
+        $contactId,
+        $currentUser['id']
+    ]);
+
+    if ($result['success']) {
+        successResponse('Riwayat chat berhasil dihapus', ['deleted_rows' => $result['affected_rows']]);
+    }
+
+    errorResponse('Gagal menghapus chat', null, 500);
+}
+
+// ========== BLOCK USER ==========
+elseif ($method === 'POST' && $action === 'block') {
+    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+    $blockedId = intval($input['blocked_id'] ?? 0);
+    if (!$blockedId) {
+        errorResponse('User ID tidak valid', null, 400);
+    }
+
+    if ($blockedId === $currentUser['id']) {
+        errorResponse('Tidak dapat memblokir diri sendiri', null, 400);
+    }
+
+    $createTableQuery = "CREATE TABLE IF NOT EXISTS user_blocks (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        blocker_id INT NOT NULL,
+        blocked_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_block (blocker_id, blocked_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    executeQuery($connection, $createTableQuery);
+
+    $query = "INSERT IGNORE INTO user_blocks (blocker_id, blocked_id) VALUES (?, ?)";
+    $result = executeQuery($connection, $query, [$currentUser['id'], $blockedId]);
+    if (!$result['success']) {
+        errorResponse('Gagal memblokir pengguna', null, 500);
+    }
+
+    successResponse('Pengguna berhasil diblokir', null);
+}
+
+// ========== UNBLOCK USER ==========
+elseif ($method === 'POST' && $action === 'unblock') {
+    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+    $blockedId = intval($input['blocked_id'] ?? 0);
+    if (!$blockedId) {
+        errorResponse('User ID tidak valid', null, 400);
+    }
+
+    if ($blockedId === $currentUser['id']) {
+        errorResponse('Tidak dapat membuka blokir diri sendiri', null, 400);
+    }
+
+    $createTableQuery = "CREATE TABLE IF NOT EXISTS user_blocks (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        blocker_id INT NOT NULL,
+        blocked_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_block (blocker_id, blocked_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    executeQuery($connection, $createTableQuery);
+
+    $query = "DELETE FROM user_blocks WHERE blocker_id = ? AND blocked_id = ?";
+    $result = executeQuery($connection, $query, [$currentUser['id'], $blockedId]);
+
+    if (!$result['success']) {
+        errorResponse('Gagal membuka blokir pengguna', null, 500);
+    }
+
+    successResponse('Pengguna berhasil dibuka blokirnya', null);
+}
+
 // ========== SEND MESSAGE ==========
 elseif ($method === 'POST' && $action === 'send') {
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
@@ -112,6 +246,20 @@ elseif ($method === 'POST' && $action === 'send') {
     
     if (!$receiver) {
         errorResponse('User penerima tidak ditemukan', null, 404);
+    }
+
+    $createTableQuery = "CREATE TABLE IF NOT EXISTS user_blocks (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        blocker_id INT NOT NULL,
+        blocked_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_block (blocker_id, blocked_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    executeQuery($connection, $createTableQuery);
+
+    $blockedCheck = fetchOne($connection, "SELECT 1 FROM user_blocks WHERE blocker_id = ? AND blocked_id = ?", [$currentUser['id'], $receiverId]);
+    if (!empty($blockedCheck)) {
+        errorResponse('Tidak dapat mengirim pesan ke pengguna yang diblokir.', null, 403);
     }
     
     // Insert message

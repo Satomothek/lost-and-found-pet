@@ -256,7 +256,7 @@ description: "Deskripsi baru..."
 
 **Endpoint:** `GET /api/messages.php?action=contacts`
 
-**Description:** Ambil daftar chat contacts
+**Description:** Ambil daftar chat contacts (termasuk yang diblokir)
 
 **Response:**
 ```json
@@ -270,7 +270,8 @@ description: "Deskripsi baru..."
                 "contactName": "Alex Turner",
                 "avatar": "https://i.pravatar.cc/150?img=11",
                 "text": "Apakah kucing Anda sudah ketemu?",
-                "time": "14:35"
+                "time": "14:35",
+                "isBlocked": false
             }
         ]
     }
@@ -314,7 +315,53 @@ description: "Deskripsi baru..."
 
 ---
 
-### 3. Send Message
+### 3. Block User
+
+**Endpoint:** `POST /api/messages.php?action=block`
+
+**Description:** Blokir pengguna (mencegah mereka mengirim pesan, history tetap tersimpan)
+
+**Request Body:**
+```json
+{
+    "blocked_id": 2
+}
+```
+
+**Response:**
+```json
+{
+    "status": "success",
+    "message": "Pengguna berhasil diblokir"
+}
+```
+
+---
+
+### 4. Unblock User
+
+**Endpoint:** `POST /api/messages.php?action=unblock`
+
+**Description:** Buka blokir pengguna
+
+**Request Body:**
+```json
+{
+    "blocked_id": 2
+}
+```
+
+**Response:**
+```json
+{
+    "status": "success",
+    "message": "Pengguna berhasil dibuka blokirnya"
+}
+```
+
+---
+
+### 5. Send Message
 
 **Endpoint:** `POST /api/messages.php?action=send`
 

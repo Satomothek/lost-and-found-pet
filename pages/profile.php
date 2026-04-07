@@ -73,9 +73,10 @@ $currentUser = getCurrentUser();
         <!-- Main Content -->
         <main class="main-content page-pt">
             <div class="container-fluid">
-                <!-- Profile Header Card -->
-                <div class="profile-header-card">
-                    <div class="profile-cover"></div>
+                <div class="profile-page-container">
+                    <!-- Profile Header Card -->
+                    <div class="profile-header-card">
+                        <div class="profile-cover"></div>
                     
                     <div class="profile-info-wrapper">
                         <div class="profile-avatar-large">
@@ -124,7 +125,7 @@ $currentUser = getCurrentUser();
                 </div>
 
                 <!-- Profile Content -->
-                <div style="margin-top: 30px;">
+                <div class="profile-content-wrapper" style="margin-top: 30px;">
                     <!-- Activity Tab -->
                     <div id="activity-tab" class="profile-tab-content">
                         <div class="profile-activity-section">

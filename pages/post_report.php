@@ -80,11 +80,18 @@ function renderReportCards($reports) {
         $html .= "<span style=\"font-size:0.75rem; color:var(--text-muted);\">{$relativeTime}</span>";
         $html .= "</div>";
         $html .= "</div>";
+        $html .= "<div class=\"action-buttons\">";
+        if ($report['user_id'] != $currentUser['id']) {
+            $html .= "<button class=\"btn-chat action-btn\" title=\"Chat dengan pembuat laporan\" onclick=\"startChat({$report['user_id']}, event)\">";
+            $html .= "<i class=\"fa-solid fa-comments\"></i>";
+            $html .= "</button>";
+        }
         $likeClass = $report['isLiked'] ? 'liked' : '';
         $heartStyle = $report['isLiked'] ? 'fa-solid' : 'fa-regular';
         $html .= "<button class=\"btn-like action-btn {$likeClass}\" title=\"Simpan ke Bookmarks\" onclick=\"toggleLike({$report['id']}, event)\">";
         $html .= "<i class=\"{$heartStyle} fa-bookmark\"></i>";
         $html .= "</button>";
+        $html .= "</div>";
         $html .= "</div>";
         $html .= "</div>";
     }
@@ -124,7 +131,8 @@ if (!$isCreatePage) {
                 'desc' => $report['description'],
                 'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
                 'likes' => intval($report['likes']),
-                'isLiked' => boolval($report['isLiked'])
+                'isLiked' => boolval($report['isLiked']),
+                'user_id' => $report['user_id']
             ];
         }, $reports);
     }
@@ -308,12 +316,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isCreatePage) {
         <?php if ($isCreatePage): ?>
         <main class="main-content page-pt">
             <div class="container-fluid">
-                <div class="page-header" style="margin-bottom: 30px;">
-                    <h1 style="font-size: 2.4rem; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;"><?php echo $editReport ? 'Edit Laporan' : 'Publikasikan Laporan Jaringan'; ?></h1>
-                    <p style="color: var(--text-muted);"><?php echo $editReport ? 'Perbarui detail laporan Anda.' : 'Isi detail laporan untuk membantu komunitas menemukan atau melaporkan hewan.'; ?></p>
-                </div>
+                <div class="report-create-wrapper glass-panel">
+                    <div class="page-header" style="margin-bottom: 30px;">
+                        <h1 style="font-size: 2.4rem; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;"><?php echo $editReport ? 'Edit Laporan' : 'Publikasikan Laporan Jaringan'; ?></h1>
+                        <p style="color: var(--text-muted);"><?php echo $editReport ? 'Perbarui detail laporan Anda.' : 'Isi detail laporan untuk membantu komunitas menemukan atau melaporkan hewan.'; ?></p>
+                    </div>
 
-                <form id="form-create-report" class="glass-panel-form" enctype="multipart/form-data" method="POST" action="<?php echo $editReport ? '../api/reports.php?action=update&id=' . $editReportId : '?page=create'; ?>">
+                    <form id="form-create-report" class="glass-panel-form" enctype="multipart/form-data" method="POST" action="<?php echo $editReport ? '../api/reports.php?action=update&id=' . $editReportId : '?page=create'; ?>">
                     <?php if ($editReport): ?>
                         <input type="hidden" name="report_id" value="<?php echo $editReportId; ?>">
                     <?php endif; ?>
@@ -391,20 +400,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isCreatePage) {
 
                     <button type="submit" class="btn btn-primary btn-lg form-submit-btn" style="width: 100%;"><?php echo $editReport ? 'Perbarui Laporan' : 'Publikasikan Laporan'; ?></button>
                 </form>
+                </div>
             </div>
         </main>
         <?php else: ?>
         <main class="main-content page-pt">
             <div class="container-fluid">
-                <!-- Search Bar -->
-                <div class="search-modern" style="margin-bottom: 30px;">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" id="search-feed" placeholder="Cari nama hewan, lokasi, atau spesies hewan...">
-                </div>
+                <div class="feed-page-container">
+                    <!-- Search Bar -->
+                    <div class="search-modern" style="margin-bottom: 30px;">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="search-feed" placeholder="Cari nama hewan, lokasi, atau spesies hewan...">
+                    </div>
 
-                <!-- Feed Grid -->
-                <div class="feed-grid" id="feed-container">
-                    <?php echo renderReportCards($initialReports); ?>
+                    <!-- Feed Grid -->
+                    <div class="feed-grid" id="feed-container">
+                        <?php echo renderReportCards($initialReports); ?>
+                    </div>
                 </div>
             </div>
         </main>
@@ -547,9 +559,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isCreatePage) {
                 html += '<span class="author-name">' + report.author + '</span>';
                 html += '</div>';
                 html += '</div>';
+                html += '<div class="action-buttons">';
+                if (report.user_id != currentUser.id) {
+                    html += '<button class="btn-chat action-btn" title="Chat dengan pembuat laporan" onclick="startChat(' + report.user_id + ', event)">';
+                    html += '<i class="fa-solid fa-comments"></i>';
+                    html += '</button>';
+                }
                 html += '<button class="btn-like action-btn ' + likeClass + '" title="Simpan ke Bookmarks" onclick="toggleLike(' + report.id + ', event)">';
                 html += '<i class="' + iconClass + ' fa-bookmark"></i>';
                 html += '</button>';
+                html += '</div>';
                 html += '</div>';
                 html += '</div>';
             });
@@ -875,6 +894,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isCreatePage) {
             } catch (error) {
                 showToast('Gagal mengupdate like: ' + error.message, 'error');
             }
+        }
+
+        // Start chat with report author
+        function startChat(userId, event) {
+            event.stopPropagation();
+            window.location.href = 'messages.php?contact=' + userId;
         }
 
         // Open modal
