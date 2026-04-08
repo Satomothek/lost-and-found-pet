@@ -95,7 +95,7 @@ $loggedIn = isset($_SESSION['user_id']);
             <div class="bento-landing-grid">
                 <div class="bento-feature glass-panel">
                     <div class="feature-content">
-                        <div class="feature-icon bg-primary-light text-primary"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <div class="feature-icon bg-primary-light text-primary"><i class="fa-solid fa-chart-line"></i></div>
                         <h3>Mengelola Laporan</h3>
                         <p>Simpan dan kelola laporan Anda dengan mudah menggunakan fitur manajemen laporan yang intuitif.</p>
                     </div>
