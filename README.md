@@ -34,7 +34,7 @@ Platform untuk melaporkan dan mencari hewan peliharaan yang hilang atau ditemuka
 
 ```bash
 # Buka phpMyAdmin (http://localhost/phpmyadmin)
-# Buat database baru dengan nama 'lost_and_found_pet'
+# Buat database baru dengan nama 'petfounds_db'
 # Import file database/schema.sql
 ```
 
