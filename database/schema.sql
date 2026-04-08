@@ -1,11 +1,10 @@
--- ==========================================
+
 -- PetFounds Database Schema
--- ==========================================
 
 CREATE DATABASE IF NOT EXISTS petfounds_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE petfounds_db;
 
--- ========== USERS TABLE ==========
+-- USERS TABLE
 CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -19,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     INDEX idx_email (email)
 );
 
--- ========== PET REPORTS TABLE ==========
+-- PET REPORTS TABLE
 CREATE TABLE IF NOT EXISTS pet_reports (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -42,7 +41,7 @@ CREATE TABLE IF NOT EXISTS pet_reports (
     INDEX idx_event_date (event_date)
 );
 
--- ========== LIKES TABLE ==========
+-- LIKES TABLE
 CREATE TABLE IF NOT EXISTS likes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -53,7 +52,7 @@ CREATE TABLE IF NOT EXISTS likes (
     UNIQUE KEY unique_like (user_id, report_id)
 );
 
--- ========== MESSAGES TABLE ==========
+-- MESSAGES TABLE
 CREATE TABLE IF NOT EXISTS messages (
     id INT PRIMARY KEY AUTO_INCREMENT,
     sender_id INT NOT NULL,
@@ -70,7 +69,7 @@ CREATE TABLE IF NOT EXISTS messages (
     INDEX idx_created_at (created_at)
 );
 
--- ========== CONTACTS TABLE (Chat Contacts) ==========
+-- CONTACTS TABLE (Chat Contacts)
 CREATE TABLE IF NOT EXISTS chat_contacts (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user1_id INT NOT NULL,
@@ -83,7 +82,7 @@ CREATE TABLE IF NOT EXISTS chat_contacts (
     UNIQUE KEY unique_contact (user1_id, user2_id)
 );
 
--- ========== DUMMY DATA ==========
+-- DUMMY DATA
 INSERT INTO users (name, email, password, avatar_url, bio) VALUES
 ('Admin PetFounds', 'admin@petfounds.pro', SHA2('admin123', 256), 'https://i.pravatar.cc/150?img=68', 'Admin Platform PetFounds'),
 ('Alex Turner', 'alex@example.com', SHA2('password123', 256), 'https://i.pravatar.cc/150?img=11', 'Pecinta kucing dan anjing'),

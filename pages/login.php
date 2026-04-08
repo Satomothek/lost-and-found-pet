@@ -29,14 +29,15 @@ requireGuest();
 
     <div id="toast-container"></div>
 
+    <a href="http://localhost/lost-and-found-pet/" class="app-logo" style="position: absolute; top: 24px; left: 24px;">
+        <div class="logo-icon flex-center">
+            <i class="fa-solid fa-paw"></i>
+        </div>
+        <span class="logo-text">Pet<span class="text-gradient">Founds</span></span>
+    </a>
+
     <main class="auth-layout">
         <div class="auth-card">
-            <div class="flex-center" style="margin-bottom: 30px;">
-                <div class="logo-icon flex-center" style="width: 70px; height: 70px; border-radius: 20px; font-size: 2.5rem;">
-                    <i class="fa-solid fa-paw"></i>
-                </div>
-            </div>
-            
             <h2 class="text-center" style="font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 5px;">
                 Welcome
             </h2>   

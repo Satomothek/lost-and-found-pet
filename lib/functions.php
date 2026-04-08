@@ -4,7 +4,7 @@
  * PetFounds Application
  */
 
-// ========== HTTP RESPONSE FUNCTIONS ==========
+// HTTP RESPONSE FUNCTIONS
 function jsonResponse($status, $message = '', $data = null, $httpCode = 200) {
     http_response_code($httpCode);
     header('Content-Type: application/json');
@@ -30,7 +30,7 @@ function errorResponse($message = 'Error', $data = null, $httpCode = 400) {
     jsonResponse('error', $message, $data, $httpCode);
 }
 
-// ========== VALIDATION FUNCTIONS ==========
+// VALIDATION FUNCTIONS
 function validateEmail($email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
@@ -48,7 +48,7 @@ function validatePassword($password) {
     return strlen($password) >= 6;
 }
 
-// ========== SECURITY FUNCTIONS ==========
+// SECURITY FUNCTIONS
 function hashPassword($password) {
     return password_hash($password, PASSWORD_BCRYPT);
 }
@@ -61,7 +61,7 @@ function generateToken($length = 32) {
     return bin2hex(random_bytes($length / 2));
 }
 
-// ========== DATABASE FUNCTIONS ==========
+// DATABASE FUNCTIONS
 function getLastError($connection) {
     return $connection->error;
 }
@@ -132,7 +132,7 @@ function fetchOne($connection, $query, $params = []) {
     return $exec['result']->fetch_assoc();
 }
 
-// ========== IMAGE UPLOAD FUNCTIONS ==========
+// IMAGE UPLOAD FUNCTIONS
 function uploadImage($file, $uploadDir = 'uploads/') {
     if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
         return ['success' => false, 'error' => 'File tidak valid'];
@@ -202,7 +202,7 @@ function normalizeAssetUrl($url) {
     return $url;
 }
 
-// ========== DATE FORMATTING ==========
+// DATE FORMATTING
 function formatDate($date, $format = 'id') {
     $dateObj = new DateTime($date);
     
@@ -247,7 +247,7 @@ function timeAgo($date) {
     }
 }
 
-// ========== PAGINATION ==========
+// PAGINATION
 function getPagination($page = 1, $limit = 10) {
     $page = max(1, intval($page));
     $limit = max(1, intval($limit));

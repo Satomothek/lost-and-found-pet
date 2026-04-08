@@ -47,10 +47,10 @@ $loggedIn = isset($_SESSION['user_id']);
         <section class="hero-section container-fluid">
             <div class="hero-text fade-up" style="animation-delay: 0.1s;">
                 <div class="badge-glass mb-4">
-                    <i class="fa-solid fa-sparkles text-warning"></i> Platform Pencarian Hewan #1
+                    <i class="fa-solid fa-sparkles text-warning"></i> Platform Pencarian Hewan
                 </div>
                 <h1 class="hero-title">Satukan Kembali <br><span class="text-gradient">Keluarga Anda.</span></h1>
-                <p class="hero-desc">Jangan panik saat mereka hilang. Laporkan kehilangan atau temukan pemilik hewan tersesat di sekitarmu secara real-time dengan teknologi pencocokan cepat kami.</p>
+                <p class="hero-desc" style="color: black;">Jangan panik saat mereka hilang. Laporkan kehilangan atau temukan pemilik hewan tersesat di sekitarmu secara real-time dengan teknologi pencocokan cepat kami.</p>
                 <div class="hero-actions">
                     <a href="pages/login.php" class="btn btn-primary btn-lg">Mulai Pencarian <i class="fa-solid fa-arrow-right"></i></a>
                     <a href="#features" class="btn btn-glass btn-lg"><i class="fa-regular fa-compass"></i> Cara Kerja</a>
@@ -62,7 +62,7 @@ $loggedIn = isset($_SESSION['user_id']);
                         <img src="https://i.pravatar.cc/100?img=3" alt="User">
                         <img src="https://i.pravatar.cc/100?img=4" alt="User">
                     </div>
-                    <p class="text-muted text-sm">Dipercaya oleh pecinta hewan di seluruh Indonesia.</p>
+                    <p class="text-muted text-sm">Terpercaya.</p>
                 </div>
             </div>
 
@@ -93,14 +93,11 @@ $loggedIn = isset($_SESSION['user_id']);
                 <p class="text-muted" style="font-size: 1.1rem; max-width: 600px; margin: 10px auto 0;">Setiap detik sangat berharga. Kami menyediakan alat terbaik untuk mempercepat proses pencarian hewan Anda.</p>
             </div>
             <div class="bento-landing-grid">
-                <div class="bento-feature feature-large glass-panel">
+                <div class="bento-feature glass-panel">
                     <div class="feature-content">
                         <div class="feature-icon bg-primary-light text-primary"><i class="fa-solid fa-map-location-dot"></i></div>
-                        <h3>Pemetaan Live Radar</h3>
-                        <p>Lacak lokasi terakhir hewan peliharaan Anda terlihat di atas peta interaktif. Dapatkan notifikasi push instan jika ada pengguna lain yang melaporkan penemuan di area Anda.</p>
-                    </div>
-                    <div class="feature-visual bg-primary-light">
-                        <i class="fa-solid fa-tower-broadcast text-primary" style="font-size: 8rem; opacity: 0.2;"></i>
+                        <h3>Mengelola Laporan</h3>
+                        <p>Simpan dan kelola laporan Anda dengan mudah menggunakan fitur manajemen laporan yang intuitif.</p>
                     </div>
                 </div>
                 <div class="bento-feature glass-panel">
@@ -112,6 +109,11 @@ $loggedIn = isset($_SESSION['user_id']);
                     <div class="feature-icon bg-warning-light text-warning"><i class="fa-solid fa-robot"></i></div>
                     <h3>Pencocokan Cerdas</h3>
                     <p>Sistem kami mencocokkan ciri-ciri laporan hilang dan laporan ditemukan secara otomatis.</p>
+                </div>
+                <div class="bento-feature glass-panel">
+                    <div class="feature-icon text-danger" style="background: #cf4040a1; color: white;"><i class="fa-solid fa-bookmark"></i></div>
+                    <h3>Bookmarks</h3>
+                    <p>Simpan laporan yang penting untuk referensi di masa depan.</p>
                 </div>
             </div>
         </section>
@@ -134,9 +136,9 @@ $loggedIn = isset($_SESSION['user_id']);
                     <p class="text-muted">© 2026 PetFounds Inc.<br>Developed by Kelompok 1 Praktikum Web.</p>
                 </div>
                 <div class="footer-links">
-                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-github"></i></a>
+                    <a href="https://github.com/Satomothek/lost-and-found-pet" target="_blank">
+                        <i class="fa-brands fa-github"></i>
+                    </a>
                 </div>
             </div>
         </footer>

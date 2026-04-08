@@ -231,9 +231,9 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.classList.add('show'), 10);
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
 
-   // ==========================================
+   // --- API CALLS ---
 // 10. CHAT ENGINE (Messages)
-// ==========================================
+// 
 const CHAT_DB_KEY = 'petfounds_chat_db_v1';
 
 // Data awal Chat (Dummy)
@@ -372,9 +372,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ==========================================
+//
 // 11. PROFILE ENGINE (Render Aktivitas)
-// ==========================================
+//
 function renderProfileActivity() {
     const activityContainer = document.getElementById('profile-activity-list');
     const statReports = document.getElementById('stat-reports');

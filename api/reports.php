@@ -15,7 +15,7 @@ $currentUser = getCurrentUser();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-// ========== GET REPORTS ==========
+// GET REPORTS
 if ($method === 'GET') {
     $reportId = intval($_GET['id'] ?? 0);
     
@@ -141,7 +141,7 @@ if ($method === 'GET') {
     successResponse('Data laporan hewan berhasil diambil', ['reports' => $reports, 'page' => $pagination['page']]);
 }
 
-// ========== CREATE REPORT ==========
+// CREATE REPORT
 elseif ($method === 'POST' && $action === 'create') {
     $type = sanitizeInput($_POST['type'] ?? '');
     $petName = sanitizeInput($_POST['pet_name'] ?? '');
@@ -199,7 +199,7 @@ elseif ($method === 'POST' && $action === 'create') {
     }
 }
 
-// ========== UPDATE REPORT ==========
+// UPDATE REPORT
 elseif (($method === 'PUT' || ($method === 'POST' && $action === 'update')) && $action === 'update') {
     $reportId = intval($_POST['report_id'] ?? $_GET['id'] ?? 0);
     
@@ -253,7 +253,7 @@ elseif (($method === 'PUT' || ($method === 'POST' && $action === 'update')) && $
     }
 }
 
-// ========== DELETE REPORT ==========
+// DELETE REPORT
 elseif ($method === 'DELETE' && $action === 'delete') {
     $reportId = intval($_GET['id'] ?? 0);
     
@@ -279,7 +279,7 @@ elseif ($method === 'DELETE' && $action === 'delete') {
     }
 }
 
-// ========== PATCH REPORT (Mark as Done) ==========
+// PATCH REPORT (Mark as Done)
 elseif ($method === 'PATCH') {
     $reportId = intval($_GET['id'] ?? 0);
     

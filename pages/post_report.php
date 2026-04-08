@@ -22,7 +22,7 @@ if ($editReportId > 0) {
     $query = "SELECT * FROM pet_reports WHERE id = ? AND user_id = ?";
     $editReport = fetchOne($connection, $query, [$editReportId, $currentUser['id']]);
     if ($editReport) {
-        $isCreatePage = true; // Show create form for editing
+        $isCreatePage = true;
     }
 }
 

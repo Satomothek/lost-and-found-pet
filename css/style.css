@@ -1,7 +1,6 @@
-/* ================= PROFESSIONAL DESIGN SYSTEM & ANIMATION ================= */
+/*  DESIGN SYSTEM & ANIMATION  */
 
 :root {
-    /* Skema Warna Profesional (Indigo & Slate) */
     --primary: #4f46e5;       /* Indigo 600 */
     --primary-hover: #4338ca; /* Indigo 700 */
     --primary-light: rgba(79, 70, 229, 0.1);
@@ -37,7 +36,7 @@
     --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ================= RESET & GLOBAL ================= */
+/*  RESET & GLOBAL  */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
     font-family: 'Outfit', sans-serif; 
@@ -57,7 +56,7 @@ body {
 a { text-decoration: none; color: inherit; transition: var(--transition); }
 button, input, select, textarea { font-family: inherit; border: none; outline: none; background: none; transition: var(--transition); }
 
-/* ================= UTILS & ANIMATIONS ================= */
+/*  UTILS & ANIMATIONS  */
 .hidden { display: none !important; }
 .text-gradient { 
     background: linear-gradient(135deg, var(--primary), #a855f7); 
@@ -95,7 +94,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
     100% { transform: translate(50px, 50px) scale(1.1); }
 }
 
-/* ================= PREMIUM LOGO & BUTTONS ================= */
+/*  PREMIUM LOGO & BUTTONS  */
 .app-logo { display: flex; align-items: center; gap: 12px; }
 .logo-icon { 
     width: 42px; height: 42px; 
@@ -133,7 +132,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
     border: 1px solid var(--glass-border); box-shadow: var(--shadow-glass); 
 }
 
-/* ================= LAYOUT & SIDEBAR ================= */
+/*  LAYOUT & SIDEBAR  */
 .app-wrapper { display: flex; min-height: 100vh; }
 .sidebar { 
     width: 280px; position: fixed; height: calc(100vh - 40px); margin: 20px; 
@@ -156,7 +155,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 .page-header-panel { margin-bottom: 28px; }
 .page-header-panel h1 { font-size: 2rem; margin: 0 0 8px; font-weight: 800; color: var(--secondary); }
 .page-header-panel p { margin: 0; color: var(--text-muted); font-size: 0.95rem; max-width: 760px; line-height: 1.6; }
-/* ================= LANDING PAGE SPECIFIC ================= */
+/*  LANDING PAGE SPECIFIC  */
 .guest-header { position: absolute; top: 0; left: 0; width: 100%; z-index: 100; padding: 25px 0; }
 
 /* Hero Section */
@@ -211,7 +210,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 .footer-links { display: flex; gap: 20px; font-size: 1.5rem; color: var(--text-muted); }
 .footer-links a:hover { color: var(--primary); }
 
-/* ================= LOGIN PAGE ================= */
+/*  LOGIN PAGE  */
 .auth-layout { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
 .auth-card { position: relative; z-index: 1; padding: 50px 40px; border-radius: var(--radius-lg); width: 100%; max-width: 450px; box-shadow: var(--shadow-lg); }
 
@@ -231,7 +230,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 
 #custom-species-container { margin-bottom: 16px; }
 
-/* ================= FEED (POST REPORT) ================= */
+/*  FEED (POST REPORT)  */
 .search-modern { position: relative !important; display: flex !important; justify-content: center !important; width: min(760px, 100%) !important; max-width: 760px !important; margin: 0 auto 30px !important; }
 .search-modern input { width: 100% !important; padding: 16px 20px 16px 55px !important; border: 1px solid var(--glass-border) !important; border-radius: var(--radius-full) !important; font-size: 1rem !important; box-shadow: var(--shadow-sm) !important; }
 
@@ -317,7 +316,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
     font-size: 16px;
 }
 
-/* ================= FORMS ================= */
+/*  FORMS  */
 .report-create-wrapper {
     background-color: rgba(255, 255, 255, 0.96);
     border: 1px solid rgba(226, 232, 240, 0.9);
@@ -437,7 +436,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .input-modern.no-icon textarea { padding-left: 20px; resize: vertical; border-radius: 14px; }
 
-/* ================= MODAL & TOAST ================= */
+/*  MODAL & TOAST  */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 20px; opacity: 0; visibility: hidden; transition: var(--transition); overflow-y: auto; }
 .modal-overlay.show { opacity: 1; visibility: visible; }
 .modal-content { background-color: var(--surface); width: min(600px, calc(100vw - 40px)); max-width: 600px; max-height: calc(100vh - 80px); border-radius: var(--radius-lg); padding: 30px; position: relative; transform: scale(0.9); transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: visible; }
@@ -525,7 +524,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 .toast { background-color: var(--secondary); color: white; padding: 16px 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto; font-weight: 500;}
 .toast.show { transform: translateX(0); }
 
-/* ================= RESPONSIVE (MOBILE) ================= */
+/*  RESPONSIVE (MOBILE)  */
 @media (max-width: 1024px) {
     /* Hide Desktop Sidebar */
     .sidebar { transform: translateX(-120%); width: 280px; }
@@ -561,7 +560,6 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
     .report-type-selector { flex-direction: column; }
     .footer-content { flex-direction: column; gap: 20px; text-align: center; }
 
-    /* Profile header becomes responsive a bit earlier */
     .profile-info-wrapper {
         flex-direction: column;
         align-items: center;
@@ -599,7 +597,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
     .modal-actions { width: 100%; justify-content: center; }
 }
 
-/* ================= CHAT APPLICATION UI ================= */
+/*  CHAT APPLICATION UI  */
 .chat-page-container {
     width: 100%;
     max-width: 1240px;
@@ -980,7 +978,7 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
     .chat-active-panel { height: 68%; }
 }
 
-/* ================= ADVANCED PROFILE UI ================= */
+/*  ADVANCED PROFILE UI  */
 .profile-header-card { 
     background-color: var(--glass-bg); backdrop-filter: blur(20px);
     border-radius: var(--radius-lg); overflow: hidden; 

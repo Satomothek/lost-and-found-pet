@@ -15,7 +15,7 @@ $currentUser = getCurrentUser();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-// ========== GET CURRENT USER PROFILE ==========
+// GET CURRENT USER PROFILE
 if ($method === 'GET' && !$action) {
     $userId = $currentUser['id'];
     
@@ -71,7 +71,7 @@ if ($method === 'GET' && !$action) {
     successResponse('Profil berhasil diambil', $userData);
 }
 
-// ========== GET USER BY ID ==========
+// GET USER BY ID
 elseif ($method === 'GET' && $action === 'user') {
     $userId = intval($_GET['id'] ?? 0);
     
@@ -98,7 +98,7 @@ elseif ($method === 'GET' && $action === 'user') {
     successResponse('Data user berhasil diambil', $userData);
 }
 
-// ========== UPDATE PROFILE ==========
+// UPDATE PROFILE
 elseif ($method === 'POST' && $action === 'update') {
     $name = sanitizeInput($_POST['name'] ?? '');
     $bio = sanitizeInput($_POST['bio'] ?? '');
@@ -128,7 +128,7 @@ elseif ($method === 'POST' && $action === 'update') {
     }
 }
 
-// ========== UPDATE AVATAR ==========
+// UPDATE AVATAR
 elseif ($method === 'POST' && $action === 'avatar') {
     if (!isset($_FILES['avatar'])) {
         errorResponse('File avatar tidak ditemukan', null, 400);
@@ -149,7 +149,7 @@ elseif ($method === 'POST' && $action === 'avatar') {
     }
 }
 
-// ========== GET USER REPORTS ==========
+// GET USER REPORTS
 elseif ($method === 'GET' && $action === 'reports') {
     $userId = intval($_GET['id'] ?? $currentUser['id']);
     $page = intval($_GET['page'] ?? 1);
@@ -191,7 +191,7 @@ elseif ($method === 'GET' && $action === 'reports') {
     ]);
 }
 
-// ========== GET USER BOOKMARKS ==========
+// GET USER BOOKMARKS
 elseif ($method === 'GET' && $action === 'bookmarks') {
     $query = "SELECT pr.*
               FROM pet_reports pr

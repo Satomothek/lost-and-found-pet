@@ -15,7 +15,7 @@ $currentUser = getCurrentUser();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-// ========== GET CHAT CONTACTS ==========
+// GET CHAT CONTACTS
 if ($method === 'GET' && $action === 'contacts') {
     $createBlockTable = "CREATE TABLE IF NOT EXISTS user_blocks (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -72,7 +72,7 @@ if ($method === 'GET' && $action === 'contacts') {
     successResponse('Chat contacts berhasil diambil', ['contacts' => $contacts]);
 }
 
-// ========== GET MESSAGES WITH SPECIFIC USER ==========
+//  GET MESSAGES WITH SPECIFIC USER 
 elseif ($method === 'GET' && $action === 'history') {
     $contactId = intval($_GET['contact_id'] ?? 0);
     
@@ -111,7 +111,7 @@ elseif ($method === 'GET' && $action === 'history') {
     successResponse('Chat history berhasil diambil', ['messages' => $messages]);
 }
 
-// ========== GET USER PROFILE ==========
+//  GET USER PROFILE 
 elseif ($method === 'GET' && $action === 'user') {
     $contactId = intval($_GET['user_id'] ?? 0);
     if (!$contactId) {
@@ -141,7 +141,7 @@ elseif ($method === 'GET' && $action === 'user') {
     successResponse('Profile user berhasil diambil', ['contact' => $contact]);
 }
 
-// ========== DELETE CHAT HISTORY ==========
+//  DELETE CHAT HISTORY 
 elseif ($method === 'POST' && $action === 'delete') {
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
     $contactId = intval($input['contact_id'] ?? 0);
@@ -164,7 +164,7 @@ elseif ($method === 'POST' && $action === 'delete') {
     errorResponse('Gagal menghapus chat', null, 500);
 }
 
-// ========== BLOCK USER ==========
+//  BLOCK USER 
 elseif ($method === 'POST' && $action === 'block') {
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
     $blockedId = intval($input['blocked_id'] ?? 0);
@@ -194,7 +194,7 @@ elseif ($method === 'POST' && $action === 'block') {
     successResponse('Pengguna berhasil diblokir', null);
 }
 
-// ========== UNBLOCK USER ==========
+//  UNBLOCK USER 
 elseif ($method === 'POST' && $action === 'unblock') {
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
     $blockedId = intval($input['blocked_id'] ?? 0);
@@ -225,7 +225,7 @@ elseif ($method === 'POST' && $action === 'unblock') {
     successResponse('Pengguna berhasil dibuka blokirnya', null);
 }
 
-// ========== SEND MESSAGE ==========
+//  SEND MESSAGE 
 elseif ($method === 'POST' && $action === 'send') {
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
     

@@ -46,7 +46,7 @@ function login($connection, $email, $password) {
         return ['success' => false, 'message' => 'Email atau password salah'];
     }
     
-    // Verify password (using SHA2 from database)
+    // Verify password
     if (sha1($password) === $user['password'] || 
         hash('sha256', $password) === $user['password'] ||
         password_verify($password, $user['password'])) {

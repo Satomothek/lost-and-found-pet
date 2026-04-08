@@ -3,7 +3,7 @@
  * Shared across all pages
  */
 
-// ========== TOAST NOTIFICATION ==========
+// TOAST NOTIFICATION
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
     
@@ -37,7 +37,7 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// ========== FETCH WRAPPER ==========
+// FETCH WRAPPER
 async function apiCall(url, options = {}) {
     try {
         const response = await fetch(url, {
@@ -56,7 +56,7 @@ async function apiCall(url, options = {}) {
     }
 }
 
-// ========== FORM VALIDATION ==========
+// FORM VALIDATION
 function validateEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -72,7 +72,7 @@ function sanitizeInput(input) {
     return div.innerHTML;
 }
 
-// ========== DATE FORMATTING ==========
+// DATE FORMATTING
 function formatDate(dateString) {
     const date = new Date(dateString);
     const options = { 
@@ -106,7 +106,7 @@ function timeAgo(dateString) {
     return "Baru saja";
 }
 
-// ========== LOCAL STORAGE HELPERS ==========
+// LOCAL STORAGE HELPERS
 function getFromStorage(key) {
     try {
         return JSON.parse(localStorage.getItem(key));
@@ -131,7 +131,7 @@ function removeFromStorage(key) {
     }
 }
 
-// ========== DOM HELPERS ==========
+// DOM HELPERS
 function getElementById(id) {
     return document.getElementById(id);
 }
@@ -160,7 +160,7 @@ function hasClass(element, className) {
     return element ? element.classList.contains(className) : false;
 }
 
-// ========== PAGINATION ==========
+// PAGINATION
 function generatePaginationButtons(currentPage, totalPages) {
     const buttons = [];
     
@@ -196,7 +196,7 @@ function generatePaginationButtons(currentPage, totalPages) {
     return buttons;
 }
 
-// ========== IMAGE PREVIEW ==========
+// IMAGE PREVIEW
 function previewImage(input, previewElement) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -210,7 +210,7 @@ function previewImage(input, previewElement) {
     }
 }
 
-// ========== DEBOUNCE ==========
+// DEBOUNCE
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -223,7 +223,7 @@ function debounce(func, wait) {
     };
 }
 
-// ========== THROTTLE ==========
+// THROTTLE
 function throttle(func, limit) {
     let inThrottle;
     return function(...args) {
