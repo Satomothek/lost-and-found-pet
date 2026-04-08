@@ -77,10 +77,10 @@ $loggedIn = isset($_SESSION['user_id']);
                         </div>
                     </div>
                     <div class="floating-badge badge-2">
-                        <div class="icon-circle bg-warning"><i class="fa-solid fa-radar"></i></div>
+                        <div class="icon-circle bg-warning"><i class="fa-solid fa-exclamation-triangle"></i></div>
                         <div>
-                            <strong style="color: var(--secondary); display: block;">Radar Aktif</strong>
-                            <span class="text-muted text-sm">Mendeteksi radius 5km</span>
+                            <strong style="color: var(--secondary); display: block;">Hilang!</strong>
+                            <span class="text-muted text-sm">Naruto Hilang!</span>
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ $loggedIn = isset($_SESSION['user_id']);
             <div class="bento-landing-grid">
                 <div class="bento-feature glass-panel">
                     <div class="feature-content">
-                        <div class="feature-icon bg-primary-light text-primary"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <div class="feature-icon bg-primary-light text-primary"><i class="fa-solid fa-file-invoice"></i></div>
                         <h3>Mengelola Laporan</h3>
                         <p>Simpan dan kelola laporan Anda dengan mudah menggunakan fitur manajemen laporan yang intuitif.</p>
                     </div>
@@ -111,7 +111,7 @@ $loggedIn = isset($_SESSION['user_id']);
                     <p>Sistem kami mencocokkan ciri-ciri laporan hilang dan laporan ditemukan secara otomatis.</p>
                 </div>
                 <div class="bento-feature glass-panel">
-                    <div class="feature-icon text-danger" style="background: #cf4040a1; color: white;"><i class="fa-solid fa-bookmark"></i></div>
+                    <div class="feature-icon text-danger" style="background: #ad2f2f6a; color: white;"><i class="fa-solid fa-bookmark"></i></div>
                     <h3>Bookmarks</h3>
                     <p>Simpan laporan yang penting untuk referensi di masa depan.</p>
                 </div>
@@ -121,7 +121,7 @@ $loggedIn = isset($_SESSION['user_id']);
         <section class="cta-section container-fluid">
             <div class="cta-box glass-panel text-center">
                 <h2 style="font-size: 3rem; font-weight: 800; color: white; margin-bottom: 20px;">Siap Menjadi Pahlawan?</h2>
-                <p style="color: rgba(255,255,255,0.8); font-size: 1.2rem; max-width: 600px; margin: 0 auto 40px;">Bantu komunitas dan satukan kembali hewan peliharaan dengan keluarga mereka. Bergabung gratis sekarang.</p>
+                <p style="color: rgba(255,255,255,0.8); font-size: 1.2rem; max-width: 600px; margin: 0 auto 40px;">Bantu orang lain dan satukan kembali hewan peliharaan dengan keluarga mereka. Bergabung sekarang!</p>
                 <a href="pages/login.php" class="btn bg-surface text-primary btn-lg shadow-lg" style="font-size: 1.2rem; padding: 20px 40px;">Buka Akses Dashboard <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </section>

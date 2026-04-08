@@ -83,8 +83,10 @@ if ($method === 'GET') {
     }
     
     if ($search) {
-        $query .= " AND (pr.pet_name LIKE ? OR pr.description LIKE ? OR pr.location LIKE ?)";
+        $query .= " AND (pr.pet_name LIKE ? OR pr.description LIKE ? OR pr.location LIKE ? OR pr.species LIKE ? OR pr.species_detail LIKE ? )";
         $searchTerm = "%$search%";
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
         $params[] = $searchTerm;
         $params[] = $searchTerm;
         $params[] = $searchTerm;
