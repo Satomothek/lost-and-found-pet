@@ -156,12 +156,19 @@ elseif ($method === 'GET' && $action === 'reports') {
     
     $pagination = getPagination($page, 10);
     
-    $query = "SELECT * FROM pet_reports 
-              WHERE user_id = ? AND status = 'active'
-              ORDER BY created_at DESC
+    $query = "SELECT pr.*,
+                     u.name       AS author_name,
+                     u.avatar_url AS author_avatar,
+                     (SELECT COUNT(*) FROM likes WHERE report_id = pr.id) AS likes_count,
+                     (SELECT COUNT(*) FROM likes WHERE report_id = pr.id AND user_id = ?) AS is_liked
+              FROM pet_reports pr
+              JOIN users u ON pr.user_id = u.id
+              WHERE pr.user_id = ? AND pr.status = 'active'
+              ORDER BY pr.created_at DESC
               LIMIT ? OFFSET ?";
     
     $reports = fetchAll($connection, $query, [
+        $currentUser['id'],
         $userId,
         $pagination['limit'],
         $pagination['offset']
@@ -173,15 +180,28 @@ elseif ($method === 'GET' && $action === 'reports') {
     
     $reports = array_map(function($report) {
         return [
-            'id' => $report['id'],
-            'type' => $report['type'],
-            'petName' => $report['pet_name'],
-            'species' => $report['species'],
-            'location' => $report['location'],
-            'description' => $report['description'],
-            'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
-            'date' => timeAgo($report['created_at']),
-            'eventDate' => $report['event_date'] ? date('d M Y', strtotime($report['event_date'])) : null
+            'id'                   => $report['id'],
+            'type'                 => $report['type'],
+            'petName'              => $report['pet_name'],
+            'species'              => $report['species'],
+            'speciesDetail'        => $report['species_detail'] ?? null,
+            'location'             => $report['location'],
+            'location_description' => $report['location_description'] ?? null,
+            'description'          => $report['description'],
+            'image'                => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
+            'latitude'             => $report['latitude'] !== null ? floatval($report['latitude']) : null,
+            'longitude'            => $report['longitude'] !== null ? floatval($report['longitude']) : null,
+            'eventDate'            => $report['event_date'] ? date('d M Y', strtotime($report['event_date'])) : null,
+            'created_at'           => $report['created_at'],
+            'updated_at'           => $report['updated_at'] ?? null,
+            'createdRelative'      => timeAgo($report['created_at']),
+            'updatedRelative'      => !empty($report['updated_at']) ? timeAgo($report['updated_at']) : null,
+            'author'               => $report['author_name'] ?: 'Anonim',
+            'authorImg'            => normalizeAssetUrl($report['author_avatar'] ?: 'https://i.pravatar.cc/150?img=68'),
+            'likes'                => intval($report['likes_count']),
+            'isLiked'              => boolval($report['is_liked']),
+            'user_id'              => $report['user_id'],
+            'status'               => $report['status'],
         ];
     }, $reports);
     
@@ -193,9 +213,13 @@ elseif ($method === 'GET' && $action === 'reports') {
 
 // GET USER BOOKMARKS
 elseif ($method === 'GET' && $action === 'bookmarks') {
-    $query = "SELECT pr.*
+    $query = "SELECT pr.*,
+                     u.name       AS author_name,
+                     u.avatar_url AS author_avatar,
+                     (SELECT COUNT(*) FROM likes WHERE report_id = pr.id) AS likes_count
               FROM pet_reports pr
               JOIN likes l ON l.report_id = pr.id
+              JOIN users u ON pr.user_id = u.id
               WHERE l.user_id = ? AND pr.status = 'active'
               ORDER BY l.created_at DESC";
 
@@ -207,16 +231,28 @@ elseif ($method === 'GET' && $action === 'bookmarks') {
 
     $bookmarks = array_map(function($report) {
         return [
-            'id' => $report['id'],
-            'type' => $report['type'],
-            'petName' => $report['pet_name'],
-            'species' => $report['species'],
-            'location' => $report['location'],
-            'description' => $report['description'],
-            'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
-            'date' => timeAgo($report['created_at']),
-            'eventDate' => $report['event_date'] ? date('d M Y', strtotime($report['event_date'])) : null,
-            'isLiked' => true
+            'id'                   => $report['id'],
+            'type'                 => $report['type'],
+            'petName'              => $report['pet_name'],
+            'species'              => $report['species'],
+            'speciesDetail'        => $report['species_detail'] ?? null,
+            'location'             => $report['location'],
+            'location_description' => $report['location_description'] ?? null,
+            'description'          => $report['description'],
+            'image'                => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
+            'latitude'             => $report['latitude'] !== null ? floatval($report['latitude']) : null,
+            'longitude'            => $report['longitude'] !== null ? floatval($report['longitude']) : null,
+            'eventDate'            => $report['event_date'] ? date('d M Y', strtotime($report['event_date'])) : null,
+            'created_at'           => $report['created_at'],
+            'updated_at'           => $report['updated_at'] ?? null,
+            'createdRelative'      => timeAgo($report['created_at']),
+            'updatedRelative'      => !empty($report['updated_at']) ? timeAgo($report['updated_at']) : null,
+            'author'               => $report['author_name'] ?: 'Anonim',
+            'authorImg'            => normalizeAssetUrl($report['author_avatar'] ?: 'https://i.pravatar.cc/150?img=68'),
+            'likes'                => intval($report['likes_count']),
+            'isLiked'              => true,
+            'user_id'              => $report['user_id'],
+            'status'               => $report['status'],
         ];
     }, $bookmarks);
 

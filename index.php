@@ -33,7 +33,7 @@ $loggedIn = isset($_SESSION['user_id']);
             </div>
             <div class="hero-nav flex-center" style="gap: 15px;">
                 <?php if ($loggedIn): ?>
-                    <a href="pages/post_report.php" class="btn btn-primary shadow-primary">Dashboard</a>
+                    <a href="pages/explore.php" class="btn btn-primary shadow-primary">Dashboard</a>
                     <a href="pages/logout.php" class="btn btn-ghost font-bold">Keluar</a>
                 <?php else: ?>
                     <a href="pages/login.php" class="btn btn-ghost font-bold">Masuk</a>

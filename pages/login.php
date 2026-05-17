@@ -87,7 +87,7 @@ requireGuest();
                 if (data.status === 'success') {
                     showToast('Otorisasi Jaringan Berhasil.', 'success');
                     setTimeout(() => {
-                        window.location.href = 'post_report.php';
+                        window.location.href = 'explore.php';
                     }, 1000);
                 } else {
                     showToast(data.message || 'Login gagal', 'error');

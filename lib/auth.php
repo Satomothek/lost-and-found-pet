@@ -189,7 +189,7 @@ function requireLogin() {
 // Require guest (redirect to dashboard if already logged in)
 function requireGuest() {
     if (isLoggedIn()) {
-        header('Location: post_report.php');
+        header('Location: explore.php');
         exit;
     }
 }

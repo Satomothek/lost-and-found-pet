@@ -180,23 +180,24 @@ function normalizeAssetUrl($url) {
     }
 
     if (strpos($url, '../') === 0) {
-        return $url;
+        $url = preg_replace('#^(\.\./)+#', '', $url);
     }
 
     if ($url[0] === '/') {
-        return '..' . $url;
+        $url = ltrim($url, '/');
     }
 
     if (strpos($url, 'uploads/') === 0) {
-        return '../public/' . $url;
-    }
-
-    if (strpos($url, 'public/uploads/') === 0) {
-        return '../' . $url;
+        $url = 'public/' . $url;
     }
 
     if (strpos($url, 'public/') === 0) {
-        return '../' . $url;
+        $scriptPath = $_SERVER['SCRIPT_NAME'] ?? '';
+        $appRoot = dirname(dirname($scriptPath));
+        if ($appRoot === '/' || $appRoot === '\\') {
+            return '/' . $url;
+        }
+        return rtrim($appRoot, '/') . '/' . $url;
     }
 
     return $url;

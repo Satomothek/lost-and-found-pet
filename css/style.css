@@ -230,6 +230,33 @@ button, input, select, textarea { font-family: inherit; border: none; outline: n
 
 #custom-species-container { margin-bottom: 16px; }
 
+.report-map, .modal-report-map {
+    width: 100%;
+    height: 340px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    margin-bottom: 16px;
+}
+
+.report-map .leaflet-control-container,
+.modal-report-map .leaflet-control-container {
+    z-index: 999;
+}
+
+.leaflet-container {
+    width: 100% !important;
+    height: 100% !important;
+    background: #e5e3df;
+}
+
+.location-status-text {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
 /*  FEED (POST REPORT)  */
 .search-modern { position: relative !important; display: flex !important; justify-content: center !important; width: min(760px, 100%) !important; max-width: 760px !important; margin: 0 auto 30px !important; }
 .search-modern input { width: 100% !important; padding: 16px 20px 16px 55px !important; border: 1px solid var(--glass-border) !important; border-radius: var(--radius-full) !important; font-size: 1rem !important; box-shadow: var(--shadow-sm) !important; }
