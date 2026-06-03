@@ -12,11 +12,12 @@ vendor/
 .idea/
 
 # Upload files
-public/uploads/*
-public/uploads/avatars/*
-public/uploads/reports/*
+public/uploads/**
 
 # Keep folders
+!public/uploads/
 !public/uploads/.gitkeep
+!public/uploads/avatars/
 !public/uploads/avatars/.gitkeep
+!public/uploads/reports/
 !public/uploads/reports/.gitkeep
