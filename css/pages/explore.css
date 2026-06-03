@@ -1,0 +1,79 @@
+/*
+ * FIX MODAL MAP:
+ * Masalah 1 — .modal-content overflow:visible + .modal-overlay overflow-y:auto
+ *             menciptakan stacking context baru → Leaflet tile terpotong/hilang.
+ * Masalah 2 — #modal-map tidak punya height eksplisit → Leaflet render di container 0px.
+ * Masalah 3 — .modal-overlay z-index:1000 tapi Leaflet pane z-index default 400
+ *             kadang bentrok dengan elemen lain di dalam modal.
+ *
+ * Solusi: pakai pola clipper wrapper yang sama dengan create_report.php.
+ */
+
+/* Pastikan modal di atas sidebar (z-index:50) dan semua elemen lain */
+#post-modal.modal-overlay {
+    z-index: 1100 !important;
+}
+
+/* Modal content: overflow harus hidden agar konten tidak bocor keluar */
+#post-modal .modal-content {
+    overflow: hidden !important;
+    overflow-y: auto !important;    /* scroll konten panjang secara vertikal */
+}
+
+/* Wrapper clipper untuk map — dia yang menentukan ukuran & memotong konten */
+.modal-map-clipper {
+    width: 100%;
+    height: 260px;
+    border-radius: 12px;
+    overflow: hidden;               /* urung semua tile Leaflet */
+    position: relative;
+    background: #e8edf2;
+    border: 1px solid var(--border, #e2e8f0);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-top: 10px;
+}
+
+/* Map element sendiri: overflow visible agar Leaflet bebas render tile */
+#modal-map {
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
+    background: #e8edf2 !important;
+}
+
+/* Z-index internal Leaflet di dalam modal */
+#modal-map .leaflet-pane    { z-index: 400 !important; }
+#modal-map .leaflet-top,
+#modal-map .leaflet-bottom  { z-index: 401 !important; }
+
+/* ── FILTER BUTTONS ── */
+.filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border, #e2e8f0);
+    background: var(--surface, #fff);
+    color: var(--text-muted, #64748b);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+.filter-btn:hover {
+    border-color: var(--primary, #6366f1);
+    color: var(--primary, #6366f1);
+    background: rgba(99,102,241,0.06);
+}
+.filter-btn.active {
+    background: var(--primary, #6366f1);
+    border-color: var(--primary, #6366f1);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.25);
+}
+.filter-btn i { font-size: 0.8rem; }

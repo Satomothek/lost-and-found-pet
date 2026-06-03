@@ -4,7 +4,15 @@
  * Handles login, register, logout, and session management
  */
 
-session_start();
+// Include PHPMailer
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Start secure session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Check if user is logged in
 function isLoggedIn() {
@@ -46,10 +54,8 @@ function login($connection, $email, $password) {
         return ['success' => false, 'message' => 'Email atau password salah'];
     }
     
-    // Verify password
-    if (sha1($password) === $user['password'] || 
-        hash('sha256', $password) === $user['password'] ||
-        password_verify($password, $user['password'])) {
+    // Verify password using bcrypt
+    if (password_verify($password, $user['password'])) {
         
         // Set session
         $_SESSION['user_id'] = $user['id'];
@@ -191,6 +197,234 @@ function requireGuest() {
     if (isLoggedIn()) {
         header('Location: explore.php');
         exit;
+    }
+}
+
+// Forgot password - generate reset token and send email
+function forgotPassword($connection, $email) {
+    $email = sanitizeInput($email);
+
+    if (!validateEmail($email)) {
+        return ['success' => false, 'message' => 'Format email tidak valid'];
+    }
+
+    // Check if email exists
+    $query = "SELECT id FROM users WHERE email = ?";
+    $user = fetchOne($connection, $query, [$email]);
+
+    if (!$user) {
+        // Don't reveal if email exists or not (security)
+        return ['success' => true, 'message' => 'Jika email terdaftar, link pemulihan akan dikirim'];
+    }
+
+    // Generate reset token
+    $resetToken = generateToken(32);
+    $expiryTime = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+    // Update user with reset token
+    $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?";
+    $result = executeQuery($connection, $updateQuery, [$resetToken, $expiryTime, $user['id']]);
+
+    if (!$result['success']) {
+        return ['success' => false, 'message' => 'Gagal memproses permintaan'];
+    }
+
+    // Send email with reset link
+    $resetLink = APP_URL . '/pages/reset_password.php?token=' . $resetToken;
+    $subject = 'PetFounds - Pemulihan Sandi';
+    $message = "Halo,\n\nAnda telah meminta untuk mengatur ulang sandi Anda.\n\n";
+    $message .= "Klik link di bawah untuk mengatur ulang sandi Anda:\n";
+    $message .= $resetLink . "\n\n";
+    $message .= "Link ini berlaku selama 1 jam.\n\n";
+    $message .= "Jika Anda tidak meminta ini, abaikan email ini.\n\n";
+    $message .= "Terima kasih,\nTim PetFounds";
+
+    $headers = "From: noreply@petfounds.local\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+    // Send email (untuk testing bisa diganti dengan log)
+    if (function_exists('mail')) {
+        @mail($email, $subject, $message, $headers);
+    }
+
+    return ['success' => true, 'message' => 'Jika email terdaftar, link pemulihan akan dikirim'];
+}
+
+// Reset password using token
+function resetPassword($connection, $token, $password, $passwordConfirm) {
+    if (empty($token)) {
+        return ['success' => false, 'message' => 'Token tidak valid'];
+    }
+
+    if (!validatePassword($password)) {
+        return ['success' => false, 'message' => 'Password minimal 6 karakter'];
+    }
+
+    if ($password !== $passwordConfirm) {
+        return ['success' => false, 'message' => 'Password tidak cocok'];
+    }
+
+    // Find user with valid reset token
+    $query = "SELECT id, email FROM users WHERE reset_token = ? AND reset_token_expires > NOW()";
+    $user = fetchOne($connection, $query, [$token]);
+
+    if (!$user) {
+        return ['success' => false, 'message' => 'Token tidak valid atau sudah kadaluarsa'];
+    }
+
+    // Hash new password
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+    // Update password and clear reset token
+    $updateQuery = "UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?";
+    $result = executeQuery($connection, $updateQuery, [$hashedPassword, $user['id']]);
+
+    if ($result['success']) {
+        return ['success' => true, 'message' => 'Sandi berhasil diatur ulang'];
+    }
+
+    return ['success' => false, 'message' => 'Gagal mengatur ulang sandi'];
+}
+
+// Generate and send OTP
+function requestOTP($connection, $email) {
+    $email = sanitizeInput($email);
+
+    if (!validateEmail($email)) {
+        return ['success' => false, 'message' => 'Format email tidak valid'];
+    }
+
+    // Check if email exists
+    $query = "SELECT id FROM users WHERE email = ?";
+    $user = fetchOne($connection, $query, [$email]);
+
+    if (!$user) {
+        // Don't reveal if email exists or not (security)
+        return ['success' => true, 'message' => 'Jika email terdaftar, kode OTP akan dikirim'];
+    }
+
+    // Generate OTP
+    $otpLength = intval($_ENV['OTP_LENGTH'] ?? 6);
+    $otp = str_pad(random_int(0, pow(10, $otpLength) - 1), $otpLength, '0', STR_PAD_LEFT);
+    $otpExpiry = date('Y-m-d H:i:s', strtotime('+' . ($_ENV['OTP_EXPIRY'] ?? 600) . ' seconds'));
+
+    // Update user with OTP
+    $updateQuery = "UPDATE users SET otp = ?, otp_expires = ? WHERE id = ?";
+    $result = executeQuery($connection, $updateQuery, [$otp, $otpExpiry, $user['id']]);
+
+    if (!$result['success']) {
+        return ['success' => false, 'message' => 'Gagal memproses permintaan'];
+    }
+
+    // Send OTP email
+    $sent = sendOTPEmail($email, $otp);
+
+    if (!$sent) {
+        return ['success' => false, 'message' => 'Gagal mengirim OTP'];
+    }
+
+    return ['success' => true, 'message' => 'Jika email terdaftar, kode OTP akan dikirim'];
+}
+
+// Verify OTP and allow password reset
+function verifyOTP($connection, $email, $otp) {
+    error_log("=== Verify OTP Start ===");
+    error_log("Email: $email, OTP: $otp");
+
+    $email = sanitizeInput($email);
+    // Don't sanitize OTP - it's only 6 digits
+    $otp = trim($otp);
+
+    error_log("After sanitize - Email: $email, OTP: $otp");
+
+    if (empty($email) || empty($otp)) {
+        error_log("Empty email or OTP");
+        return ['success' => false, 'message' => 'Email dan OTP tidak boleh kosong'];
+    }
+
+    if (!validateEmail($email)) {
+        error_log("Invalid email format");
+        return ['success' => false, 'message' => 'Format email tidak valid'];
+    }
+
+    // Find user with valid OTP
+    error_log("Querying for user with email=$email and otp=$otp");
+    $query = "SELECT id FROM users WHERE email = ? AND otp = ? AND otp_expires > NOW()";
+    $user = fetchOne($connection, $query, [$email, $otp]);
+
+    if (!$user) {
+        error_log("User not found with valid OTP");
+        // Debug: check what's in DB
+        $debugQuery = "SELECT id, email, otp, otp_expires FROM users WHERE email = ?";
+        $debugUser = fetchOne($connection, $debugQuery, [$email]);
+        if ($debugUser) {
+            error_log("Debug - User found but OTP mismatch: DB_OTP=" . $debugUser['otp'] . ", INPUT_OTP=$otp, EXPIRES=" . $debugUser['otp_expires']);
+        }
+        return ['success' => false, 'message' => 'Kode OTP tidak valid atau sudah kadaluarsa'];
+    }
+
+    error_log("User found, generating reset token");
+
+    // Generate reset token for password change
+    $resetToken = generateToken(32);
+    $tokenExpiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+    // Update user with reset token and clear OTP
+    $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expires = ?, otp = NULL, otp_expires = NULL WHERE id = ?";
+    $result = executeQuery($connection, $updateQuery, [$resetToken, $tokenExpiry, $user['id']]);
+
+    if ($result['success']) {
+        error_log("✅ OTP verified and reset token generated");
+        return ['success' => true, 'message' => 'OTP terverifikasi', 'token' => $resetToken];
+    }
+
+    error_log("Failed to update user with reset token");
+    return ['success' => false, 'message' => 'Gagal verifikasi OTP'];
+}
+
+
+// Send OTP email using PHPMailer
+function sendOTPEmail($email, $otp) {
+    error_log("=== OTP Email Send Start ===");
+    error_log("To: $email, OTP: $otp");
+
+    try {
+        $mail = new PHPMailer(true);
+
+        // SMTP configuration
+        error_log("Configuring SMTP...");
+        $mail->isSMTP();
+        $mail->Host = $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = $_ENV['MAIL_USERNAME'] ?? '';
+        $mail->Password = $_ENV['MAIL_PASSWORD'] ?? '';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = intval($_ENV['MAIL_PORT'] ?? 587);
+        $mail->SMTPDebug = 0; // Set to 2 for debug
+
+        error_log("SMTP Config: Host=" . $mail->Host . ", Port=" . $mail->Port . ", User=" . $mail->Username);
+
+        // Email details
+        error_log("Setting email content...");
+        $mail->setFrom($_ENV['MAIL_USERNAME'] ?? '', $_ENV['MAIL_FROM_NAME'] ?? 'PetFounds');
+        $mail->addAddress($email);
+        $mail->Subject = 'PetFounds - Kode OTP Pemulihan Sandi';
+        $mail->isHTML(false);
+        $mail->Body = "Kode OTP Anda: $otp\n\nBerlaku 10 menit.\n\nJangan bagikan kode ini kepada siapapun.\n\nTerima kasih,\nTim PetFounds";
+
+        error_log("Sending email to: $email");
+        if ($mail->send()) {
+            error_log("✅ OTP Email sent successfully to $email");
+            return true;
+        } else {
+            error_log("❌ Email send failed: " . $mail->ErrorInfo);
+            return false;
+        }
+
+    } catch (Exception $e) {
+        error_log("❌ PHPMailer Exception: " . $e->getMessage());
+        error_log("Error Info: " . (isset($mail) ? $mail->ErrorInfo : 'N/A'));
+        return false;
     }
 }
 

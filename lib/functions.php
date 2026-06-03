@@ -5,6 +5,10 @@
  */
 
 // HTTP RESPONSE FUNCTIONS
+function getBaseUrl() {
+    return defined('APP_URL') ? APP_URL : 'http://localhost/lost-and-found-pet';
+}
+
 function jsonResponse($status, $message = '', $data = null, $httpCode = 200) {
     http_response_code($httpCode);
     header('Content-Type: application/json');
@@ -248,7 +252,6 @@ function timeAgo($date) {
     }
 }
 
-// PAGINATION
 function getPagination($page = 1, $limit = 10) {
     $page = max(1, intval($page));
     $limit = max(1, intval($limit));
@@ -259,6 +262,45 @@ function getPagination($page = 1, $limit = 10) {
         'limit' => $limit,
         'offset' => $offset
     ];
+}
+
+// SESSION & SECURITY FUNCTIONS
+function startSecureSession() {
+    if (session_status() === PHP_SESSION_NONE) {
+        $timeout = intval($_ENV['SESSION_TIMEOUT'] ?? 3600);
+        ini_set('session.gc_maxlifetime', $timeout);
+        session_set_cookie_params([
+            'lifetime' => $timeout,
+            'path' => '/',
+            'secure' => boolval($_ENV['SESSION_COOKIE_SECURE'] ?? false),
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+        session_start();
+    }
+}
+
+function checkSessionTimeout() {
+    $timeout = intval($_ENV['SESSION_TIMEOUT'] ?? 3600);
+    if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time']) > $timeout) {
+        session_destroy();
+        return false;
+    }
+    if (isset($_SESSION['login_time'])) {
+        $_SESSION['login_time'] = time();
+    }
+    return true;
+}
+
+function generateCSRFToken() {
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function verifyCSRFToken($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
 ?>

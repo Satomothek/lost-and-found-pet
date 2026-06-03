@@ -1,4 +1,3 @@
-
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
@@ -31,6 +30,7 @@ DROP TABLE IF EXISTS `messages`;
 DROP TABLE IF EXISTS `likes`;
 DROP TABLE IF EXISTS `pet_reports`;
 DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `breed_cache`;
 
 -- --------------------------------------------------------
 
@@ -116,6 +116,10 @@ CREATE TABLE `users` (
   `avatar_url` varchar(255) DEFAULT 'https://i.pravatar.cc/150?img=68',
   `bio` text DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expires` datetime DEFAULT NULL,
+  `otp` varchar(10) DEFAULT NULL,
+  `otp_expires` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -132,6 +136,23 @@ CREATE TABLE `user_blocks` (
   `blocked_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `breed_cache`
+-- Cache daftar ras dari TheCatAPI/TheDogAPI, refresh tiap 7 hari
+--
+
+CREATE TABLE `breed_cache` (
+  `id` int(11) NOT NULL,
+  `species_key` varchar(20) NOT NULL COMMENT 'cat | dog',
+  `breed_names` longtext NOT NULL COMMENT 'JSON array nama ras lowercase',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+  COMMENT='Cache daftar ras dari TheCatAPI/TheDogAPI, refresh tiap 7 hari';
+
+-- --------------------------------------------------------
 
 --
 -- Indexes for dumped tables
@@ -179,7 +200,9 @@ ALTER TABLE `pet_reports`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `idx_email` (`email`);
+  ADD KEY `idx_email` (`email`),
+  ADD KEY `idx_reset_token` (`reset_token`),
+  ADD KEY `idx_otp` (`otp`);
 
 --
 -- Indexes for table `user_blocks`
@@ -189,44 +212,40 @@ ALTER TABLE `user_blocks`
   ADD UNIQUE KEY `unique_block` (`blocker_id`,`blocked_id`);
 
 --
+-- Indexes for table `breed_cache`
+--
+ALTER TABLE `breed_cache`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_species_key` (`species_key`);
+
+-- --------------------------------------------------------
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
---
--- AUTO_INCREMENT for table `chat_contacts`
---
 ALTER TABLE `chat_contacts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `likes`
---
 ALTER TABLE `likes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `messages`
---
 ALTER TABLE `messages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `pet_reports`
---
 ALTER TABLE `pet_reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `users`
---
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `user_blocks`
---
 ALTER TABLE `user_blocks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `breed_cache`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+-- --------------------------------------------------------
 
 --
 -- Constraints for dumped tables
@@ -265,4 +284,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-

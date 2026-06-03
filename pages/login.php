@@ -54,6 +54,9 @@ requireGuest();
                     <i class="fa-solid fa-lock"></i>
                     <input type="password" id="login-password" placeholder="Kata Sandi" required>
                 </div>
+                <div style="text-align: right; margin-bottom: 15px;">
+                    <a href="forgot_password.php" class="text-primary font-bold" style="font-size: 0.85rem; text-decoration: none;">Lupa sandi?</a>
+                </div>
                 <button type="submit" class="btn btn-primary btn-block" style="padding: 16px; margin-top: 20px;">
                     Login
                 </button>
@@ -65,37 +68,7 @@ requireGuest();
         </div>
     </main>
 
-    <script src="../js/functions.js"></script>
-    <script>
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            try {
-                const response = await fetch('../api/login.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    showToast('Otorisasi Jaringan Berhasil.', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'explore.php';
-                    }, 1000);
-                } else {
-                    showToast(data.message || 'Login gagal', 'error');
-                }
-            } catch (error) {
-                showToast('Terjadi kesalahan: ' + error.message, 'error');
-            }
-        });
-    </script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/pages/login.js"></script>
 </body>
 </html>

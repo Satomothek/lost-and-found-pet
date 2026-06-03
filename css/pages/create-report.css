@@ -1,0 +1,465 @@
+/* ── IMPORT FONT ── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* ── DESIGN TOKENS ── */
+:root {
+    --form-bg: #ffffff;
+    --form-radius: 20px;
+    --accent-found: #10b981;
+    --accent-lost: #f59e0b;
+    --accent-primary: #6366f1;
+    --accent-primary-light: #eef2ff;
+    --input-bg: #f8fafc;
+    --input-border: #e2e8f0;
+    --input-border-focus: #6366f1;
+    --input-shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    --label-color: #64748b;
+    --text-main: #0f172a;
+    --text-muted: #94a3b8;
+    --section-bg: #f8fafc;
+    --divider: #f1f5f9;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(99,102,241,0.06);
+    --card-shadow-hover: 0 4px 24px rgba(99,102,241,0.14);
+}
+
+/* ── WRAPPER & PANEL ── */
+.report-create-wrapper.glass-panel {
+    background: var(--form-bg);
+    border-radius: 28px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--divider);
+    padding: 48px 52px;
+    max-width: 760px;
+    margin: 0 auto;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── PAGE HEADER ── */
+.page-header h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 2rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #6366f1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--label-color);
+    margin-top: 4px;
+}
+
+/* ── SECTION DIVIDER ── */
+.form-section {
+    margin-bottom: 32px;
+}
+
+.form-section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--divider);
+}
+
+/* ── TYPE SELECTOR ── */
+.report-type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.type-card {
+    position: relative;
+    cursor: pointer;
+}
+
+.type-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.type-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 22px 16px;
+    border-radius: 16px;
+    border: 2px solid var(--input-border);
+    background: var(--input-bg);
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--label-color);
+}
+
+.type-content i {
+    font-size: 1.7rem;
+    transition: transform 0.22s ease;
+}
+
+.type-card:hover .type-content {
+    border-color: var(--accent-primary);
+    background: var(--accent-primary-light);
+    color: var(--accent-primary);
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.type-card:hover .type-content i {
+    transform: scale(1.1);
+}
+
+.type-card.active .type-content.found-glow,
+.type-card input:checked + .type-content.found-glow {
+    border-color: var(--accent-found);
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    color: #065f46;
+    box-shadow: 0 4px 20px rgba(16,185,129,0.18);
+}
+
+.type-card.active .type-content.lost-glow,
+.type-card input:checked + .type-content.lost-glow {
+    border-color: var(--accent-lost);
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    color: #92400e;
+    box-shadow: 0 4px 20px rgba(245,158,11,0.18);
+}
+
+/* ── UPLOAD AREA ── */
+.upload-card {
+    border: 2px dashed var(--input-border) !important;
+    border-radius: 18px !important;
+    padding: 40px 24px !important;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%) !important;
+    transition: all 0.22s ease !important;
+    margin-bottom: 32px !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.upload-card:hover {
+    border-color: var(--accent-primary) !important;
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%) !important;
+    box-shadow: var(--card-shadow-hover) !important;
+    transform: translateY(-1px);
+}
+
+.upload-card label {
+    cursor: pointer;
+}
+
+.upload-card i.fa-cloud-arrow-up {
+    font-size: 3rem !important;
+    color: var(--accent-primary) !important;
+    filter: drop-shadow(0 4px 12px rgba(99,102,241,0.3));
+}
+
+.upload-card strong {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1rem !important;
+    font-weight: 700;
+    color: var(--text-main) !important;
+}
+
+.upload-card span {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+}
+
+/* ── LOCATION MODE SELECTOR ── */
+.location-mode-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.location-mode-card {
+    position: relative;
+    cursor: pointer;
+}
+
+.location-mode-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.location-mode-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+    border-radius: 14px;
+    border: 2px solid var(--input-border);
+    background: var(--input-bg);
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--label-color);
+    text-align: center;
+    line-height: 1.3;
+}
+
+.location-mode-content i {
+    font-size: 1.4rem;
+    transition: transform 0.22s ease;
+}
+
+.location-mode-card:hover .location-mode-content {
+    border-color: var(--accent-primary);
+    background: var(--accent-primary-light);
+    color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.location-mode-card input:checked + .location-mode-content {
+    border-color: var(--accent-primary);
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    color: #4338ca;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.18);
+}
+
+.location-mode-card input:checked + .location-mode-content i {
+    transform: scale(1.1);
+}
+
+/* GPS badge */
+.gps-accuracy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    color: #065f46;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+/* ── MAP ── */
+.report-map-wrapper {
+    margin-bottom: 28px;
+}
+
+.report-map {
+    width: 100% !important;
+    height: 320px !important;
+    min-height: 320px !important;
+    border-radius: 16px;
+    border: 2px solid var(--input-border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    overflow: hidden;
+    display: block !important;
+    position: relative !important;
+}
+
+.leaflet-container {
+    background: #e8f0fe !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Pastikan tile tidak ter-clip akibat overflow parent */
+#report-map .leaflet-pane {
+    z-index: 400;
+}
+
+/* Map hint overlay */
+.map-pick-hint {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #4338ca;
+    margin-bottom: 10px;
+}
+.map-pick-hint.visible { display: flex; }
+
+/* ── FORM INPUTS — override style.css .input-modern ── */
+.glass-panel-form .input-modern {
+    position: static !important;
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    background: var(--input-bg) !important;
+    border: 1.5px solid var(--input-border) !important;
+    border-radius: 14px !important;
+    padding: 0 18px !important;
+    margin-bottom: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    min-height: 52px;
+    width: 100%;
+    box-shadow: none !important;
+}
+
+.glass-panel-form .input-modern:focus-within {
+    border-color: var(--input-border-focus) !important;
+    box-shadow: var(--input-shadow-focus) !important;
+    background: #ffffff !important;
+}
+
+/* Override absolute icon from style.css */
+.glass-panel-form .input-modern > i {
+    position: static !important;
+    transform: none !important;
+    top: auto !important;
+    left: auto !important;
+    color: var(--text-muted);
+    font-size: 1rem;
+    flex-shrink: 0;
+    width: 18px;
+    text-align: center;
+    transition: color 0.2s;
+}
+
+.glass-panel-form .input-modern:focus-within > i {
+    color: var(--accent-primary);
+}
+
+.glass-panel-form .input-modern input,
+.glass-panel-form .input-modern select,
+.glass-panel-form .input-modern textarea {
+    flex: 1 !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text-main);
+    padding: 14px 0 !important;
+    width: auto !important;
+    min-height: 0;
+}
+
+.glass-panel-form .input-modern input::placeholder,
+.glass-panel-form .input-modern textarea::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.glass-panel-form .input-modern select {
+    cursor: pointer;
+}
+
+.glass-panel-form .input-modern select option {
+    background: #fff;
+    color: var(--text-main);
+}
+
+.glass-panel-form .input-modern.textarea-field {
+    align-items: flex-start;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+}
+
+.glass-panel-form .input-modern.textarea-field > i {
+    margin-top: 2px;
+}
+
+.glass-panel-form .input-modern textarea {
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.glass-panel-form .input-modern input:disabled {
+    color: var(--label-color);
+    cursor: default;
+}
+
+/* ── FORM GRID ── */
+.glass-panel-form .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.glass-panel-form .form-grid .input-modern {
+    margin-bottom: 0;
+}
+
+/* ── SUBMIT BUTTON ── */
+.form-submit-btn {
+    width: 100% !important;
+    padding: 16px 24px !important;
+    border-radius: 16px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.35), 0 1px 4px rgba(0,0,0,0.1) !important;
+    transition: all 0.22s cubic-bezier(0.4,0,0.2,1) !important;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.form-submit-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 28px rgba(99,102,241,0.45), 0 2px 8px rgba(0,0,0,0.12) !important;
+}
+
+.form-submit-btn:active {
+    transform: translateY(0) !important;
+}
+
+/* ── FORM LABEL (inline) ── */
+.glass-panel-form > .form-label {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted) !important;
+    margin-bottom: 10px !important;
+}
+
+.report-map-section .form-label {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted) !important;
+}

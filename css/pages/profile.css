@@ -1,0 +1,608 @@
+/* ── Modal Map Fix (sama persis dengan explore.php) ── */
+#report-detail-modal.modal-overlay { z-index: 1100 !important; }
+#report-detail-modal .modal-content { overflow: hidden !important; overflow-y: auto !important; }
+.modal-map-clipper {
+    width: 100%; height: 260px;
+    border-radius: 12px; overflow: hidden;
+    position: relative; background: #e8edf2;
+    border: 1px solid var(--border, #e2e8f0);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-top: 10px;
+}
+#profile-modal-map {
+    width: 100% !important; height: 100% !important;
+    position: absolute !important; inset: 0 !important;
+    overflow: visible !important; background: #e8edf2 !important;
+}
+#profile-modal-map .leaflet-pane    { z-index: 400 !important; }
+#profile-modal-map .leaflet-top,
+#profile-modal-map .leaflet-bottom  { z-index: 401 !important; }
+
+/* ── Card footer (author box + action buttons) — sama seperti explore ── */
+.feed-card .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px 14px;
+    border-top: 1.5px solid rgba(226,232,240,0.6);
+    gap: 8px;
+}
+.feed-card .author-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+.feed-card .author-img {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(226,232,240,0.8);
+    flex-shrink: 0;
+}
+.feed-card .author-text {
+    min-width: 0;
+}
+.feed-card .author-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--secondary);
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+.feed-card .action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.feed-card .action-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(226,232,240,0.8);
+    background: rgba(248,250,252,0.9);
+    color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.feed-card .action-btn:hover { background: #fff; border-color: var(--primary); color: var(--primary); }
+.feed-card .btn-like.liked { color: var(--primary); border-color: var(--primary); background: rgba(79,70,229,0.08); }
+.feed-card .btn-chat:hover { color: #10b981; border-color: #10b981; background: rgba(16,185,129,0.08); }
+
+/* ══════════════════════════════════════════════════
+   PROFILE PAGE — Fixed & Enhanced Design
+   Semua aturan di sini menimpa style.css secara eksplisit
+   untuk menghindari konflik / double-render.
+   ══════════════════════════════════════════════════ */
+
+/* ── Page container ── */
+.profile-page-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 60px;
+}
+
+/* ── Header card ── */
+.profile-header-card {
+    background: #fff;
+    border-radius: 28px;
+    border: 1.5px solid rgba(226,232,240,0.85);
+    box-shadow: 0 20px 60px -12px rgba(15,23,42,0.12);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+/* Cover banner */
+.profile-cover {
+    height: 160px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+    position: relative;
+    overflow: hidden;
+}
+.profile-cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(168,85,247,0.4) 0%, transparent 50%);
+}
+
+/* Info wrapper */
+.profile-info-wrapper {
+    display: flex !important;
+    align-items: flex-end !important;
+    gap: 24px;
+    padding: 0 32px 28px;
+    flex-wrap: wrap;
+    margin-top: 0 !important; /* override style.css responsive rule */
+}
+
+/* Avatar */
+.profile-avatar-large {
+    position: relative;
+    margin-top: -56px;
+    flex-shrink: 0;
+}
+.profile-avatar-large img {
+    width: 112px; height: 112px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 8px 28px rgba(79,70,229,0.22);
+    display: block;
+}
+.online-indicator {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    width: 18px; height: 18px;
+    background: #10b981;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px rgba(16,185,129,0.3);
+}
+.edit-avatar-btn {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2.5px solid #fff;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 0.75rem;
+    transition: transform 0.18s ease, background 0.18s ease;
+    box-shadow: 0 4px 12px rgba(79,70,229,0.35);
+}
+.edit-avatar-btn:hover { transform: scale(1.12); background: var(--primary-hover); }
+
+/* Profile details */
+.profile-details {
+    flex: 1;
+    min-width: 0;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.profile-main-info h2 {
+    font-size: 1.6rem; font-weight: 800;
+    color: var(--secondary); margin: 0 0 4px;
+    letter-spacing: -0.02em;
+}
+.profile-email {
+    font-size: 0.88rem; color: var(--text-muted);
+    display: flex; align-items: center; gap: 6px;
+    margin: 0 0 2px;
+}
+.profile-email::before { content: '✉'; font-size: 0.8rem; }
+.profile-phone {
+    font-size: 0.88rem; color: var(--text-muted);
+    display: flex; align-items: center; gap: 6px;
+    margin: 0;
+}
+.profile-phone::before { content: '📞'; font-size: 0.8rem; }
+.profile-bio-box {
+    margin-top: 10px;
+    background: #f8fafd;
+    border: 1.5px solid rgba(226,232,240,0.85);
+    border-radius: 12px;
+    padding: 10px 16px;
+    max-width: 520px;
+}
+.profile-bio {
+    font-size: 0.88rem; color: var(--text-muted);
+    line-height: 1.6; margin: 0;
+}
+
+/* Actions */
+.profile-actions {
+    padding-top: 16px;
+    flex-shrink: 0;
+    margin-left: auto; /* dorong ke kanan */
+}
+.profile-actions .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px;
+    font-size: 0.9rem; font-weight: 600;
+    border-radius: var(--radius-full);
+    box-shadow: 0 8px 20px rgba(79,70,229,0.25);
+}
+
+/* ── Stats strip ── */
+.profile-stats-strip {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.stat-card {
+    background: #fff;
+    border: 1.5px solid rgba(226,232,240,0.85);
+    border-radius: 20px;
+    padding: 22px 20px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.05);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(15,23,42,0.10); }
+.stat-card-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; margin: 0 auto 12px;
+}
+.stat-card-icon.indigo { background: rgba(79,70,229,0.1); color: var(--primary); }
+.stat-card-icon.red    { background: rgba(239,68,68,0.1);  color: var(--danger); }
+.stat-card-icon.green  { background: rgba(16,185,129,0.1); color: #10b981; }
+.stat-card-value {
+    font-size: 2.2rem; font-weight: 800;
+    line-height: 1; margin-bottom: 6px;
+    letter-spacing: -0.03em;
+}
+.stat-card-value.indigo { color: var(--primary); }
+.stat-card-value.red    { color: var(--danger); }
+.stat-card-value.green  { color: #10b981; }
+.stat-card-label {
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* ── Tabs — override style.css .tab-btn sepenuhnya ── */
+.profile-tabs {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 20px 32px 24px;
+    border-top: 1.5px solid rgba(226,232,240,0.85);
+}
+.profile-tabs .tab-btn {
+    /* Reset semua rule dari style.css */
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px;
+    padding: 9px 20px !important;
+    border-radius: 999px !important;
+    border: 1.5px solid rgba(226,232,240,0.85) !important;
+    border-bottom: 1.5px solid rgba(226,232,240,0.85) !important; /* override border-bottom: 3px solid transparent */
+    background: transparent !important;
+    color: var(--text-muted) !important;
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: all 0.18s ease !important;
+    font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
+}
+.profile-tabs .tab-btn:hover {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    background: rgba(79,70,229,0.05) !important;
+    transform: none !important; /* override btn hover transform */
+}
+.profile-tabs .tab-btn.active {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    border-bottom-color: var(--primary) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 18px rgba(79,70,229,0.28) !important;
+}
+.profile-tabs .tab-btn i { font-size: 0.8rem; }
+
+/* ── Content wrapper ── */
+.profile-content-wrapper {
+    background: #fff;
+    border: 1.5px solid rgba(226,232,240,0.85);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(15,23,42,0.05);
+}
+
+/* ── Activity section header — override style.css ── */
+.profile-activity-section {
+    width: 100%;
+    display: block; /* override flex di style.css */
+    align-items: unset;
+    gap: unset;
+}
+.profile-activity-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    text-align: left !important; /* override text-align: center dari style.css */
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1.5px solid rgba(226,232,240,0.85);
+}
+.profile-activity-header h3 {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    color: var(--secondary) !important;
+    margin: 0 !important;
+}
+
+/* ── Activity list — override style.css sepenuhnya ── */
+.activity-list {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 18px !important;
+    margin-top: 0 !important; /* override margin-top: 40px dari style.css */
+    width: 100%;
+}
+
+/* ── Activity card (feed-card) — sesuai HTML yang di-render JS ── */
+.feed-card {
+    position: relative;
+    background: #fff;
+    border: 1.5px solid rgba(226,232,240,0.85);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.05);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+.feed-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(15,23,42,0.12);
+    border-color: rgba(79,70,229,0.3);
+}
+
+/* Image box */
+.feed-card .card-img-box {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.feed-card .card-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+.feed-card:hover .card-img-box img { transform: scale(1.05); }
+
+/* Status badge di dalam gambar */
+.feed-card .card-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.feed-card .badge-lost  { background: rgba(239,68,68,0.92);  color: #fff; }
+.feed-card .badge-found { background: rgba(16,185,129,0.92); color: #fff; }
+
+/* Card body */
+.feed-card .card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+.feed-card .card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.feed-card .card-title-row h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--secondary);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.feed-card .card-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: rgba(226,232,240,0.6);
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.feed-card .card-description {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.feed-card .card-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+    margin-top: 4px;
+}
+.feed-card .info-item {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.feed-card .info-item i { color: var(--primary); font-size: 0.7rem; }
+.feed-card .info-spacer { display: none; }
+
+/* Options button di pojok kanan atas gambar */
+.feed-card .activity-options {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background: rgba(255,255,255,0.92) !important;
+    border: 1.5px solid rgba(226,232,240,0.8) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    font-size: 0.78rem !important;
+    color: var(--text-muted) !important;
+    box-shadow: 0 2px 6px rgba(15,23,42,0.1) !important;
+    z-index: 5 !important;
+    transition: all 0.15s ease !important;
+}
+.feed-card .activity-options:hover {
+    background: #fff !important;
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    transform: none !important;
+}
+
+/* Dropdown pada card */
+.feed-card .activity-dropdown {
+    position: absolute !important;
+    top: 44px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+    min-width: 155px;
+    background: #fff !important;
+    border: 1.5px solid rgba(226,232,240,0.9) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 32px rgba(15,23,42,0.13) !important;
+    padding: 5px !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(-6px) scale(0.97) !important;
+    transition: all 0.15s ease !important;
+    z-index: 20 !important;
+    pointer-events: none !important;
+}
+.feed-card .activity-dropdown.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) scale(1) !important;
+    pointer-events: auto !important;
+}
+.feed-card .activity-dropdown-item {
+    padding: 9px 13px !important;
+    border-radius: 9px !important;
+    border-bottom: none !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    color: var(--text-main) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer;
+    transition: background 0.12s ease !important;
+}
+.feed-card .activity-dropdown-item:hover {
+    background: rgba(79,70,229,0.07) !important;
+    color: var(--primary) !important;
+}
+.feed-card .activity-dropdown-item.danger { color: var(--danger) !important; }
+.feed-card .activity-dropdown-item.danger:hover {
+    background: rgba(239,68,68,0.08) !important;
+}
+
+/* Bookmark button */
+.feed-card .bookmark-action {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(255,255,255,0.92);
+    border: 1.5px solid rgba(226,232,240,0.8);
+    border-radius: 50%;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem;
+    color: var(--primary);
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.15s ease;
+}
+.feed-card .bookmark-action:hover { background: #fff; transform: scale(1.1); }
+
+/* Empty state */
+.profile-empty-wrapper {
+    grid-column: 1 / -1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 60px 24px !important;
+    width: 100% !important;
+}
+.profile-empty-state {
+    text-align: center !important;
+    color: var(--text-muted) !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    border: none !important;
+    background: none !important;
+    max-width: none !important;
+}
+
+/* Stats bento */
+.stats-bento {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 18px !important;
+}
+.stats-bento > div {
+    border-radius: 20px !important;
+    border: 1.5px solid rgba(226,232,240,0.85) !important;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.05) !important;
+    transition: transform 0.18s ease;
+}
+.stats-bento > div:hover { transform: translateY(-3px); }
+
+/* ── Edit Profile Modal ── */
+.modal-overlay .modal-content {
+    border-radius: 28px;
+    padding: 36px 32px 32px;
+    max-width: 480px;
+}
+#edit-profile-modal h2 {
+    font-size: 1.3rem; font-weight: 800;
+    color: var(--secondary); margin-bottom: 24px;
+}
+#edit-profile-form .input-modern { margin-bottom: 14px; }
+#edit-profile-form textarea { resize: none; min-height: 100px; }
+#edit-profile-form .btn-block {
+    width: 100%; justify-content: center;
+    border-radius: var(--radius-full);
+    padding: 14px !important; font-size: 0.95rem; font-weight: 700;
+    margin-top: 8px !important;
+    box-shadow: 0 10px 24px rgba(79,70,229,0.28);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .profile-info-wrapper { flex-direction: column !important; align-items: flex-start !important; gap: 16px; padding: 0 20px 24px; }
+    .profile-actions { margin-left: 0; }
+    .profile-stats-strip { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .profile-tabs { padding: 16px 20px 20px; }
+    .stats-bento { grid-template-columns: 1fr !important; }
+    .profile-content-wrapper { padding: 20px 16px; }
+    .activity-list { grid-template-columns: 1fr !important; }
+    .card-img-box { height: 160px; }
+}
+@media (max-width: 480px) {
+    .profile-stats-strip { grid-template-columns: 1fr !important; }
+}

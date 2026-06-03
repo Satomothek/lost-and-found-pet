@@ -1,0 +1,22 @@
+.env
+.env.local
+.env.*.local
+.DS_Store
+.vscode
+*.log
+node_modules/
+vendor/
+*.swp
+*.swo
+*~
+.idea/
+
+# Upload files
+public/uploads/*
+public/uploads/avatars/*
+public/uploads/reports/*
+
+# Keep folders
+!public/uploads/.gitkeep
+!public/uploads/avatars/.gitkeep
+!public/uploads/reports/.gitkeep

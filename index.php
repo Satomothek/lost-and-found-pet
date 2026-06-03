@@ -77,10 +77,10 @@ $loggedIn = isset($_SESSION['user_id']);
                         </div>
                     </div>
                     <div class="floating-badge badge-2">
-                        <div class="icon-circle bg-warning"><i class="fa-solid fa-radar"></i></div>
+                        <div class="icon-circle bg-warning"><i class="fa-solid fa-exclamation-triangle"></i></div>
                         <div>
-                            <strong style="color: var(--secondary); display: block;">Radar Aktif</strong>
-                            <span class="text-muted text-sm">Mendeteksi radius 5km</span>
+                            <strong style="color: var(--secondary); display: block;">Heru Hilang!</strong>
+                            <span class="text-muted text-sm">5 menit yang lalu</span>
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@ $loggedIn = isset($_SESSION['user_id']);
         </footer>
     </main>
 
-    <script src="Pet%20Web%20App/script.js"></script>
+    
 </body>
 </html>
 

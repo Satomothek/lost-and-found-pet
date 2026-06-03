@@ -12,118 +12,6 @@ require_once '../lib/auth.php';
 requireLogin();
 $currentUser = getCurrentUser();
 
-/**
- * validatePetImage — Kirim gambar ke Google Gemini Vision API dan cek apakah foto hewan.
- *
- * @param  string $filePath  Path absolut/relatif ke file gambar yang sudah terupload.
- * @return array  ['is_pet' => bool, 'message' => string, 'detail' => string]
- */
-function validatePetImage(string $filePath): array {
-    if (!file_exists($filePath) || !is_readable($filePath)) {
-        return ['is_pet' => true, 'message' => 'OK', 'detail' => 'File tidak dapat dibaca'];
-    }
-
-    $imageData = base64_encode(file_get_contents($filePath));
-    $mimeType  = mime_content_type($filePath);
-    $allowedMime = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-
-    if (!in_array($mimeType, $allowedMime)) {
-        return ['is_pet' => false,
-                'message' => 'Format file tidak didukung. Gunakan JPG, PNG, atau WebP.',
-                'detail'  => "MIME: $mimeType"];
-    }
-
-    // Ambil Gemini API key
-    $apiKey = defined('GEMINI_API_KEY') ? GEMINI_API_KEY
-            : (getenv('GEMINI_API_KEY') ?: ($_ENV['GEMINI_API_KEY'] ?? ''));
-
-    error_log('[validatePetImage] Gemini API key: ' . (!empty($apiKey) ? 'YA (panjang=' . strlen($apiKey) . ')' : 'TIDAK'));
-
-    if (!$apiKey) {
-        error_log('[validatePetImage] GEMINI_API_KEY tidak ditemukan, validasi dilewati.');
-        return ['is_pet' => true, 'message' => 'OK', 'detail' => 'API key tidak dikonfigurasi'];
-    }
-
-    $prompt = 'Analyze this image and determine if it contains an animal or pet. '
-            . 'Respond ONLY with a valid JSON object, no explanation, no markdown. '
-            . 'If it contains an animal: {"is_pet":true,"animal_type":"cat","reason":"Clear photo of a cat"} '
-            . 'If it does NOT contain an animal: {"is_pet":false,"animal_type":null,"reason":"Brief reason"}';
-
-    $payload = json_encode([
-        'contents' => [[
-            'parts' => [
-                ['inline_data' => ['mime_type' => $mimeType, 'data' => $imageData]],
-                ['text' => $prompt]
-            ]
-        ]],
-        'generationConfig' => [
-            'temperature'     => 0,
-            'maxOutputTokens' => 256,
-        ]
-    ]);
-
-    $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' . $apiKey;
-
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $payload,
-        CURLOPT_TIMEOUT        => 30,
-        CURLOPT_CONNECTTIMEOUT => 10,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-    ]);
-
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlErr  = curl_error($ch);
-    curl_close($ch);
-
-    error_log("[validatePetImage] Gemini HTTP: $httpCode | cURL: " . ($curlErr ?: 'none'));
-
-    if ($curlErr || $httpCode !== 200) {
-        error_log("[validatePetImage] Gagal: " . substr($response, 0, 300));
-        return ['is_pet' => true, 'message' => 'OK', 'detail' => "HTTP $httpCode"];
-    }
-
-    // Parse respons Gemini
-    $body = json_decode($response, true);
-    $text = trim($body['candidates'][0]['content']['parts'][0]['text'] ?? '');
-
-    // Bersihkan markdown fence kalau ada
-    $text = preg_replace('/^```(?:json)?\s*/i', '', $text);
-    $text = preg_replace('/\s*```$/i', '', $text);
-    $text = trim($text);
-
-    error_log("[validatePetImage] Gemini raw text: $text");
-
-    $result = json_decode($text, true);
-
-    if (!is_array($result) || !isset($result['is_pet'])) {
-        error_log("[validatePetImage] Parse error: $text");
-        return ['is_pet' => true, 'message' => 'OK', 'detail' => 'Parse error'];
-    }
-
-    if ($result['is_pet']) {
-        return [
-            'is_pet'  => true,
-            'message' => 'OK',
-            'detail'  => $result['animal_type'] ?? 'hewan terdeteksi',
-        ];
-    }
-
-    $reason  = $result['reason'] ?? 'Gambar tidak menampilkan hewan';
-    $message = "Foto yang diunggah bukan foto hewan. " . $reason . ". Mohon unggah foto hewan peliharaan yang jelas.";
-
-    return [
-        'is_pet'  => false,
-        'message' => $message,
-        'detail'  => $reason,
-    ];
-}
-
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
@@ -307,22 +195,12 @@ elseif ($method === 'POST' && $action === 'create') {
         errorResponse('Tanggal harus antara ' . $minDate . ' sampai ' . $today, null, 400);
     }
     
-    // Handle image upload + validasi foto hewan via Claude Vision
+    // Handle image upload (validation done via TensorFlow on frontend)
     $imageUrl = 'https://via.placeholder.com/600x400?text=Pet+Image';
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $upload = uploadImage($_FILES['image'], '../public/uploads/');
+        $upload = uploadImage($_FILES['image'], '../public/uploads/reports/');
         if ($upload['success']) {
-            $uploadedPath = '../public/uploads/' . $upload['filename'];
-
-            // ── Validasi foto hewan ──────────────────────────────────────────
-            $validationResult = validatePetImage($uploadedPath);
-            if (!$validationResult['is_pet']) {
-                if (file_exists($uploadedPath)) unlink($uploadedPath);
-                errorResponse($validationResult['message'], null, 422);
-            }
-            // ────────────────────────────────────────────────────────────────
-
-            $imageUrl = 'public/uploads/' . $upload['filename'];
+            $imageUrl = 'public/uploads/reports/' . $upload['filename'];
         }
     }
     
@@ -384,22 +262,12 @@ elseif (($method === 'PUT' || ($method === 'POST' && $action === 'update')) && $
         errorResponse('Koordinat longitude tidak valid', null, 400);
     }
     
-    // Handle image upload (optional for update) + validasi foto hewan
+    // Handle image upload (optional for update, validation done via TensorFlow on frontend)
     $imageUrl = $report['image_url']; // Keep existing image if no new upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $upload = uploadImage($_FILES['image'], '../public/uploads/');
+        $upload = uploadImage($_FILES['image'], '../public/uploads/reports/');
         if ($upload['success']) {
-            $uploadedPath = '../public/uploads/' . $upload['filename'];
-
-            // ── Validasi foto hewan ──────────────────────────────────────────
-            $validationResult = validatePetImage($uploadedPath);
-            if (!$validationResult['is_pet']) {
-                if (file_exists($uploadedPath)) unlink($uploadedPath);
-                errorResponse($validationResult['message'], null, 422);
-            }
-            // ────────────────────────────────────────────────────────────────
-
-            $imageUrl = 'public/uploads/' . $upload['filename'];
+            $imageUrl = 'public/uploads/reports/' . $upload['filename'];
         }
     }
     
