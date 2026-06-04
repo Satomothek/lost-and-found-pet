@@ -151,8 +151,8 @@ function renderReportCards($reports) {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/pages/explore.css">
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/pages/explore.css">
 </head>
 <body>
     <div class="bg-animation">
@@ -236,13 +236,13 @@ function renderReportCards($reports) {
         </div>
     </div>
 
-    <script src="../js/utils.js"></script>
+    <script src="../public/js/utils.js"></script>
     <!-- FIX #3: Leaflet JS dimuat SEBELUM script utama, bukan setelahnya -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         const currentUser = <?php echo json_encode($currentUser); ?>;
         const initialReports = <?php echo json_encode($initialReports); ?>;
     </script>
-    <script src="../js/pages/explore.js"></script>
+    <script src="../public/js/pages/explore.js"></script>
 </body>
 </html>

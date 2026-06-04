@@ -19,7 +19,7 @@ requireGuest();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk ke PetFounds | Profesional Network</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css"> 
+    <link rel="stylesheet" href="../public/css/style.css"> 
 </head>
 <body class="bg-animation">
     
@@ -63,12 +63,12 @@ requireGuest();
             </form>
             
             <p class="text-center text-muted" style="margin-top: 25px; font-size: 0.9rem;">
-                Belum punya akun? <a href="register.php" class="text-primary font-bold register-link">Daftar</a>
+                Belum punya akun? <a href="register.php" class="text-primary font-bold register-link">Daftar Akun</a>
             </p>
         </div>
     </main>
 
-    <script src="../js/utils.js"></script>
-    <script src="../js/pages/login.js"></script>
+    <script src="../public/js/utils.js"></script>
+    <script src="../public/js/pages/login.js"></script>
 </body>
 </html>

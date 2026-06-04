@@ -23,8 +23,8 @@ $currentUser = getCurrentUser();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/pages/messages.css">
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/pages/messages.css">
 </head>
 <body>
     <div class="bg-animation">
@@ -157,10 +157,10 @@ $currentUser = getCurrentUser();
         </main>
     </div>
 
-    <script src="../js/utils.js"></script>
+    <script src="../public/js/utils.js"></script>
     <script>
         const currentUser = <?php echo json_encode($currentUser); ?>;
     </script>
-    <script src="../js/pages/messages.js"></script>
+    <script src="../public/js/pages/messages.js"></script>
 </body>
 </html>

@@ -12,8 +12,6 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} !^.*/api/
     RewriteCond %{REQUEST_URI} !^.*/pages/
-    RewriteCond %{REQUEST_URI} !^.*/css/
-    RewriteCond %{REQUEST_URI} !^.*/js/
     RewriteCond %{REQUEST_URI} !^.*/public/
     RewriteCond %{REQUEST_URI} !^.*/images/
     RewriteRule ^(.*)$ pages/login.php [QSA,L]

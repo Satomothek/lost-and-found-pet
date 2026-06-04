@@ -24,6 +24,8 @@ CREATE DATABASE IF NOT EXISTS petfounds_db CHARACTER SET utf8mb4 COLLATE utf8mb4
 USE petfounds_db;
 
 -- Drop existing tables to reset
+DROP TABLE IF EXISTS `admin_logs`;
+DROP TABLE IF EXISTS `admins`;
 DROP TABLE IF EXISTS `user_blocks`;
 DROP TABLE IF EXISTS `chat_contacts`;
 DROP TABLE IF EXISTS `messages`;
@@ -31,6 +33,42 @@ DROP TABLE IF EXISTS `likes`;
 DROP TABLE IF EXISTS `pet_reports`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `breed_cache`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
+
+CREATE TABLE `admins` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('super_admin','moderator') DEFAULT 'moderator',
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_logs`
+--
+
+CREATE TABLE `admin_logs` (
+  `id` int(11) NOT NULL,
+  `admin_id` int(11) NOT NULL,
+  `action` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `table_name` varchar(50) DEFAULT NULL,
+  `record_id` int(11) DEFAULT NULL,
+  `old_value` longtext DEFAULT NULL,
+  `new_value` longtext DEFAULT NULL,
+  `ip_address` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -98,8 +136,41 @@ CREATE TABLE `pet_reports` (
   `image_url` varchar(255) DEFAULT NULL,
   `likes_count` int(11) DEFAULT 0,
   `status` enum('active','resolved') DEFAULT 'active',
+  `is_verified` tinyint(1) DEFAULT 0,
+  `verified_by` int(11) DEFAULT NULL,
+  `verified_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pet_reports_archive`
+-- Untuk menyimpan history laporan yang sudah dihapus atau selesai
+--
+
+CREATE TABLE `pet_reports_archive` (
+  `id` int(11) NOT NULL,
+  `original_report_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `type` enum('lost','found') NOT NULL,
+  `pet_name` varchar(100) DEFAULT NULL,
+  `species` varchar(50) NOT NULL,
+  `species_detail` varchar(100) DEFAULT NULL,
+  `location` varchar(255) NOT NULL,
+  `location_description` text DEFAULT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `event_date` date DEFAULT NULL,
+  `description` text NOT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `likes_count` int(11) DEFAULT 0,
+  `status_before_archive` enum('active','resolved') DEFAULT 'active',
+  `archive_reason` enum('deleted','completed') NOT NULL COMMENT 'Alasan laporan diarsipkan',
+  `archived_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `original_created_at` timestamp NULL,
+  `original_updated_at` timestamp NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -116,6 +187,7 @@ CREATE TABLE `users` (
   `avatar_url` varchar(255) DEFAULT 'https://i.pravatar.cc/150?img=68',
   `bio` text DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
+  `is_suspended` tinyint(1) DEFAULT 0,
   `reset_token` varchar(255) DEFAULT NULL,
   `reset_token_expires` datetime DEFAULT NULL,
   `otp` varchar(10) DEFAULT NULL,
@@ -159,6 +231,22 @@ CREATE TABLE `breed_cache` (
 --
 
 --
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `admin_logs`
+--
+ALTER TABLE `admin_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `admin_id` (`admin_id`),
+  ADD KEY `idx_created_at` (`created_at`),
+  ADD KEY `idx_action` (`action`);
+
+--
 -- Indexes for table `chat_contacts`
 --
 ALTER TABLE `chat_contacts`
@@ -195,6 +283,15 @@ ALTER TABLE `pet_reports`
   ADD KEY `idx_event_date` (`event_date`);
 
 --
+-- Indexes for table `pet_reports_archive`
+--
+ALTER TABLE `pet_reports_archive`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `idx_archive_reason` (`archive_reason`),
+  ADD KEY `idx_archived_at` (`archived_at`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -224,6 +321,12 @@ ALTER TABLE `breed_cache`
 -- AUTO_INCREMENT for dumped tables
 --
 
+ALTER TABLE `admins`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `admin_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `chat_contacts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
@@ -234,6 +337,9 @@ ALTER TABLE `messages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `pet_reports`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `pet_reports_archive`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `users`

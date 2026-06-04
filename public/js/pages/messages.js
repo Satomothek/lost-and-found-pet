@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load chat contacts
 async function loadChatContacts() {
     try {
-        const response = await fetch('../api/messages.php?action=contacts');
+        const response = await fetch('../api/messages.php?action=contacts', { credentials: 'same-origin' });
         const data = await response.json();
         
         if (data.status === 'success') {
@@ -71,7 +71,7 @@ async function loadChatContacts() {
                         
                         // Load chat history
                         try {
-                            const historyResponse = await fetch(`../api/messages.php?action=history&contact_id=${contactId}`);
+                            const historyResponse = await fetch(`../api/messages.php?action=history&contact_id=${contactId}`, { credentials: 'same-origin' });
                             const historyData = await historyResponse.json();
                             if (historyData.status === 'success') {
                                 renderMessages(historyData.data.messages || []);
@@ -153,13 +153,13 @@ async function selectChat(contactId, element) {
     updateChatInputState();
     
     try {
-        const profileResponse = await fetch(`../api/messages.php?action=user&user_id=${contactId}`);
+        const profileResponse = await fetch(`../api/messages.php?action=user&user_id=${contactId}`, { credentials: 'same-origin' });
         const profileData = await profileResponse.json();
         if (profileData.status === 'success' && profileData.data.contact) {
             activeChatUser = { ...activeChatUser, ...profileData.data.contact };
         }
 
-        const response = await fetch(`../api/messages.php?action=history&contact_id=${contactId}`);
+        const response = await fetch(`../api/messages.php?action=history&contact_id=${contactId}`, { credentials: 'same-origin' });
         const data = await response.json();
         
         if (data.status === 'success') {
@@ -293,6 +293,7 @@ async function deleteChatHistory() {
     try {
         const response = await fetch('../api/messages.php?action=delete', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contact_id: activeChatId })
         });
@@ -319,6 +320,7 @@ async function blockChatUser() {
     try {
         const response = await fetch('../api/messages.php?action=block', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ blocked_id: activeChatId })
         });
@@ -366,6 +368,7 @@ async function unblockChatUser() {
     try {
         const response = await fetch('../api/messages.php?action=unblock', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ blocked_id: activeChatId })
         });
@@ -476,6 +479,7 @@ function setupChatForm() {
         try {
             const response = await fetch('../api/messages.php?action=send', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json'
                 },

@@ -118,9 +118,9 @@ function initializeReportMap(latitude = -7.797068, longitude = 110.370529) {
             reportMap = L.map('report-map', { zoomSnap: 0.5 }).setView([latitude, longitude], 16);
             window.reportMap = reportMap;
 
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
-                attribution: '&copy; OpenStreetMap &copy; CARTO'
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(reportMap);
 
             reportMap.on('click', function(e) {
@@ -634,6 +634,7 @@ function setupCreateForm() {
                 console.log('Starting field validation...');
                 const validationResponse = await fetch('../api/reports/validate_fields.php', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         pet_name: petName,

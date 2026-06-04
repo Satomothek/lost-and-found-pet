@@ -274,21 +274,20 @@ function validatePetFields(
     // ── 1. Spesies ────────────────────────────────────────────────────────────
     if (empty($species)) {
         $errors[] = 'Spesies hewan tidak boleh kosong';
+    } else if (strlen($species) < 2) {
+        $errors[] = 'Nama spesies terlalu pendek (min. 2 karakter)';
     } else {
+        // Cek typo dalam daftar spesies yang diketahui
         $speciesMatch = findBestMatch($species, VALID_SPECIES);
 
-        if ($speciesMatch['confidence'] >= 65) {
-            if ($speciesMatch['confidence'] < 100) {
-                // Koreksi typo spesies
-                $corrections['species'] = $speciesMatch['match'];
-                $warnings[] = "Spesies diperbaiki: '$species' → '{$speciesMatch['match']}'";
-                // Gunakan versi yang sudah dikoreksi untuk validasi ras
-                $species = $speciesMatch['match'];
-            }
-        } else {
-            $errors[] = "Spesies '$species' tidak dikenali. "
-                      . "Contoh: anjing, kucing, kelinci, burung, ikan, reptil, hamster.";
+        if ($speciesMatch['confidence'] >= 65 && $speciesMatch['confidence'] < 100) {
+            // Koreksi typo spesies (hanya jika ada typo dari daftar yang diketahui)
+            $corrections['species'] = $speciesMatch['match'];
+            $warnings[] = "Spesies diperbaiki: '$species' → '{$speciesMatch['match']}'";
+            // Gunakan versi yang sudah dikoreksi untuk validasi ras
+            $species = $speciesMatch['match'];
         }
+        // Catatan: Jika tidak cocok di daftar, izinkan sebagai spesies custom (e.g. kura-kura, trenggiling, dll)
     }
 
     // ── 2. Ras / species_detail (cek internet + cache) ────────────────────────

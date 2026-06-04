@@ -10,6 +10,7 @@ let activeProfileModalMap = null;
 document.addEventListener('DOMContentLoaded', () => {
     loadProfileActivity();
     loadProfileBookmarks();
+    loadProfileHistory();
     loadProfileStats();
     setupProfileForm();
     setupAvatarUpload();
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load profile activity
 async function loadProfileActivity() {
     try {
-        const response = await fetch('../api/profile.php?action=reports');
+        const response = await fetch('../api/profile.php?action=reports', { credentials: 'same-origin' });
         const data = await response.json();
         
         if (data.status === 'success') {
@@ -35,15 +36,71 @@ async function loadProfileActivity() {
 // Load profile bookmarks
 async function loadProfileBookmarks() {
     try {
-        const response = await fetch('../api/profile.php?action=bookmarks');
+        const response = await fetch('../api/profile.php?action=bookmarks', { credentials: 'same-origin' });
         const data = await response.json();
-        
+
         if (data.status === 'success') {
             renderActivity(data.data.bookmarks || [], 'profile-bookmarks-list');
         }
     } catch (error) {
         showToast('Gagal memuat bookmarks: ' + error.message, 'error');
     }
+}
+
+// Load profile history
+async function loadProfileHistory() {
+    try {
+        const response = await fetch('../api/reports.php?action=history', { credentials: 'same-origin' });
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            renderHistoryCards(data.data.reports || []);
+        }
+    } catch (error) {
+        showToast('Gagal memuat history: ' + error.message, 'error');
+    }
+}
+
+// Render history cards
+function renderHistoryCards(reports) {
+    const container = document.getElementById('profile-history-list');
+    if (!container) return;
+
+    if (!reports || reports.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px 24px; color: var(--text-muted);">Belum ada history laporan.</div>';
+        return;
+    }
+
+    let html = '';
+    reports.forEach(report => {
+        const petName = report.petName || report.species;
+        const reasonBadgeClass = report.archive_reason === 'completed' ? 'badge-found' : 'badge-lost';
+        const reasonIcon = report.archive_reason === 'completed' ? 'fa-check-circle' : 'fa-trash';
+
+        html += `
+            <div class="feed-card history-card">
+                <div class="card-img-box" style="position: relative;">
+                    <img src="${report.image}" alt="${escapeHtml(petName)}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=Pet+Image'">
+                    <div class="card-badge ${reasonBadgeClass}" style="top: 10px; left: 10px;">
+                        <i class="fa-solid ${reasonIcon}"></i> ${report.archive_reason_text}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-title-row">
+                        <h3>${escapeHtml(petName)}</h3>
+                        <span class="card-label">${escapeHtml(report.species)}</span>
+                    </div>
+                    <p class="card-description">${escapeHtml(report.description)}</p>
+                    <div class="card-info-grid">
+                        <span class="info-item"><i class="fa-solid fa-map-marker-alt"></i> ${escapeHtml(report.location)}</span>
+                        <span class="info-item"><i class="fa-solid fa-clock"></i> ${report.archived_ago}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
 }
 
 // Render activity
@@ -218,7 +275,7 @@ async function toggleBookmarkCard(event, reportId) {
 // Load profile stats
 async function loadProfileStats() {
     try {
-        const response = await fetch('../api/profile.php');
+        const response = await fetch('../api/profile.php', { credentials: 'same-origin' });
         const data = await response.json();
         
         if (data.status === 'success') {
@@ -275,6 +332,7 @@ function setupProfileForm() {
             try {
                 const response = await fetch('../api/profile.php?action=update', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     body: formData
                 });
                 
@@ -320,6 +378,7 @@ function setupAvatarUpload() {
             try {
                 const response = await fetch('../api/profile.php?action=avatar', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     body: formData
                 });
                 
@@ -357,6 +416,8 @@ function setupTabSwitching() {
                 loadProfileActivity();
             } else if (tabName === 'bookmarks') {
                 loadProfileBookmarks();
+            } else if (tabName === 'history') {
+                loadProfileHistory();
             }
         });
     });
@@ -568,9 +629,9 @@ function renderReportDetail(report) {
                     scrollWheelZoom: false
                 }).setView([report.latitude, report.longitude], 15);
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(activeProfileModalMap);
 
                 L.marker([report.latitude, report.longitude]).addTo(activeProfileModalMap);
@@ -661,6 +722,7 @@ async function markAsDone(event, reportId) {
     try {
         const response = await fetch(`../api/reports.php?id=${reportId}`, {
             method: 'PATCH',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -668,10 +730,11 @@ async function markAsDone(event, reportId) {
         });
         
         const data = await response.json();
-        
+
         if (data.status === 'success') {
             showToast('Laporan berhasil ditandai sebagai selesai', 'success');
-            loadProfileActivity(); // Reload activity
+            loadProfileActivity();
+            loadProfileHistory();
         } else {
             showToast(data.message || 'Gagal menandai laporan sebagai selesai', 'error');
         }
@@ -685,14 +748,16 @@ async function deleteReport(event, reportId) {
     event.stopPropagation();
     try {
         const response = await fetch(`../api/reports.php?action=delete&id=${reportId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'same-origin'
         });
         
         const data = await response.json();
-        
+
         if (data.status === 'success') {
             showToast('Laporan berhasil dihapus', 'success');
-            loadProfileActivity(); // Reload activity
+            loadProfileActivity();
+            loadProfileHistory();
         } else {
             showToast(data.message || 'Gagal menghapus laporan', 'error');
         }

@@ -18,6 +18,44 @@ $action = $_GET['action'] ?? '';
 // GET REPORTS
 if ($method === 'GET') {
     $reportId = intval($_GET['id'] ?? 0);
+
+    // Get archived/history reports
+    if ($action === 'history') {
+        $page = intval($_GET['page'] ?? 1);
+        $pagination = getPagination($page, 12);
+
+        $query = "SELECT * FROM pet_reports_archive
+                  WHERE user_id = ?
+                  ORDER BY archived_at DESC
+                  LIMIT ? OFFSET ?";
+
+        $reports = fetchAll($connection, $query, [$currentUser['id'], $pagination['limit'], $pagination['offset']]);
+
+        $formattedReports = array_map(function($report) {
+            $archiveReasonText = $report['archive_reason'] === 'completed' ? 'Selesai' : 'Dihapus';
+            return [
+                'id' => $report['id'],
+                'original_report_id' => $report['original_report_id'],
+                'type' => $report['type'],
+                'petName' => $report['pet_name'],
+                'species' => $report['species'],
+                'speciesDetail' => $report['species_detail'] ?? null,
+                'location' => $report['location'],
+                'location_description' => $report['location_description'] ?? null,
+                'description' => $report['description'],
+                'image' => normalizeAssetUrl($report['image_url'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image'),
+                'archive_reason' => $report['archive_reason'],
+                'archive_reason_text' => $archiveReasonText,
+                'archived_at' => $report['archived_at'],
+                'archived_ago' => timeAgo($report['archived_at'])
+            ];
+        }, $reports ?? []);
+
+        successResponse('History laporan berhasil diambil', ['reports' => $formattedReports, 'page' => $pagination['page']]);
+        return;
+    }
+
+    $reportId = intval($_GET['id'] ?? 0);
     
     // Jika ada ID, ambil detail laporan tunggal
     if ($reportId > 0) {
@@ -293,59 +331,103 @@ elseif (($method === 'PUT' || ($method === 'POST' && $action === 'update')) && $
     }
 }
 
-// DELETE REPORT
+// DELETE REPORT - Archive to history
 elseif ($method === 'DELETE' && $action === 'delete') {
     $reportId = intval($_GET['id'] ?? 0);
-    
+
     // Check ownership
-    $checkQuery = "SELECT user_id FROM pet_reports WHERE id = ?";
+    $checkQuery = "SELECT * FROM pet_reports WHERE id = ?";
     $report = fetchOne($connection, $checkQuery, [$reportId]);
-    
+
     if (!$report) {
         errorResponse('Laporan tidak ditemukan', null, 404);
     }
-    
+
     if ($report['user_id'] != $currentUser['id']) {
         errorResponse('Anda tidak memiliki akses untuk menghapus laporan ini', null, 403);
     }
-    
-    $query = "UPDATE pet_reports SET status = 'resolved' WHERE id = ?";
-    $result = executeQuery($connection, $query, [$reportId]);
-    
-    if ($result['success']) {
-        successResponse('Laporan berhasil dihapus');
+
+    // Move to archive
+    $archiveQuery = "INSERT INTO pet_reports_archive (
+        original_report_id, user_id, type, pet_name, species, species_detail,
+        location, location_description, latitude, longitude, event_date,
+        description, image_url, likes_count, status_before_archive,
+        archive_reason, original_created_at, original_updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $archiveResult = executeQuery($connection, $archiveQuery, [
+        $reportId, $report['user_id'], $report['type'], $report['pet_name'],
+        $report['species'], $report['species_detail'], $report['location'],
+        $report['location_description'], $report['latitude'], $report['longitude'],
+        $report['event_date'], $report['description'], $report['image_url'],
+        $report['likes_count'], $report['status'], 'deleted',
+        $report['created_at'], $report['updated_at']
+    ]);
+
+    if ($archiveResult['success']) {
+        // Delete from active reports
+        $deleteQuery = "DELETE FROM pet_reports WHERE id = ?";
+        $deleteResult = executeQuery($connection, $deleteQuery, [$reportId]);
+
+        if ($deleteResult['success']) {
+            successResponse('Laporan berhasil dihapus dan tersimpan di history');
+        } else {
+            errorResponse('Gagal menghapus laporan dari daftar aktif', null, 500);
+        }
     } else {
-        errorResponse('Gagal menghapus laporan', null, 500);
+        errorResponse('Gagal menyimpan laporan ke history', null, 500);
     }
 }
 
 // PATCH REPORT (Mark as Done)
 elseif ($method === 'PATCH') {
     $reportId = intval($_GET['id'] ?? 0);
-    
+
     // Check ownership
-    $checkQuery = "SELECT user_id FROM pet_reports WHERE id = ?";
+    $checkQuery = "SELECT * FROM pet_reports WHERE id = ?";
     $report = fetchOne($connection, $checkQuery, [$reportId]);
-    
+
     if (!$report) {
         errorResponse('Laporan tidak ditemukan', null, 404);
     }
-    
+
     if ($report['user_id'] != $currentUser['id']) {
         errorResponse('Anda tidak memiliki akses untuk mengubah laporan ini', null, 403);
     }
-    
+
     $input = json_decode(file_get_contents('php://input'), true);
     $status = sanitizeInput($input['status'] ?? '');
-    
+
     if ($status === 'completed') {
-        $query = "UPDATE pet_reports SET status = 'completed' WHERE id = ?";
-        $result = executeQuery($connection, $query, [$reportId]);
-        
-        if ($result['success']) {
-            successResponse('Laporan berhasil ditandai sebagai selesai');
+        // Move to archive
+        $archiveQuery = "INSERT INTO pet_reports_archive (
+            original_report_id, user_id, type, pet_name, species, species_detail,
+            location, location_description, latitude, longitude, event_date,
+            description, image_url, likes_count, status_before_archive,
+            archive_reason, original_created_at, original_updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $archiveResult = executeQuery($connection, $archiveQuery, [
+            $reportId, $report['user_id'], $report['type'], $report['pet_name'],
+            $report['species'], $report['species_detail'], $report['location'],
+            $report['location_description'], $report['latitude'], $report['longitude'],
+            $report['event_date'], $report['description'], $report['image_url'],
+            $report['likes_count'], $report['status'], 'completed',
+            $report['created_at'], $report['updated_at']
+        ]);
+
+        if ($archiveResult['success']) {
+            // Delete from active reports
+            $deleteQuery = "DELETE FROM pet_reports WHERE id = ?";
+            $deleteResult = executeQuery($connection, $deleteQuery, [$reportId]);
+
+            if ($deleteResult['success']) {
+                successResponse('Laporan berhasil ditandai sebagai selesai dan tersimpan di history');
+            } else {
+                errorResponse('Gagal menandai laporan sebagai selesai', null, 500);
+            }
         } else {
-            errorResponse('Gagal menandai laporan sebagai selesai', null, 500);
+            errorResponse('Gagal menyimpan laporan ke history', null, 500);
         }
     } else {
         errorResponse('Status tidak valid', null, 400);

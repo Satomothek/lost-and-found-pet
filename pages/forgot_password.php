@@ -19,7 +19,7 @@ requireGuest();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lupa Sandi | PetFounds</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../public/css/style.css">
 </head>
 <body class="bg-animation">
 
@@ -61,7 +61,7 @@ requireGuest();
         </div>
     </main>
 
-    <script src="../js/utils.js"></script>
-    <script src="../js/pages/forgot_password.js"></script>
+    <script src="../public/js/utils.js"></script>
+    <script src="../public/js/pages/forgot_password.js"></script>
 </body>
 </html>

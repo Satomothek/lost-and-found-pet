@@ -94,9 +94,9 @@ function renderFeed(reports) {
         const locationDescription = report.location_description ? escapeHtml(report.location_description) : '';
         const locationText = escapeHtml(report.location || 'Lokasi tidak tersedia');
         const locationDisplay = locationDescription ? locationText + ' - ' + locationDescription : locationText;
-        const conditionText = locationDescription || '-';
+        const conditionText = locationDescription ? truncateText(locationDescription, 18) : '-';
         const conditionClass = 'info-condition';
-        const conditionIcon = 'fa-map-pin';
+        const conditionIcon = 'fa-info-circle';
         const hasCoords = report.latitude !== null && report.longitude !== null;
         const locationLabel = hasCoords ? 'Memuat alamat...' : getShortLocation(locationDisplay);
         const locationData = hasCoords ? ' data-latitude="' + report.latitude + '" data-longitude="' + report.longitude + '" data-fallback="' + locationDisplay + '"' : '';
@@ -116,7 +116,7 @@ function renderFeed(reports) {
         html += '<span class="info-item info-event"><i class="fa-solid fa-calendar"></i> ' + escapeHtml(eventDateText || '-') + '</span>';
         html += '<span class="info-item info-location"' + locationData + '><i class="fa-solid fa-map-marker-alt"></i> ' + escapeHtml(locationLabel) + '</span>';
         html += '<span class="info-item info-created"><i class="fa-solid fa-clock"></i> ' + createdUpdatedLabel + '</span>';
-        html += '<span class="info-item ' + conditionClass + '"><i class="fa-solid ' + conditionIcon + '"></i> ' + conditionText + '</span>';
+        html += '<span class="info-item ' + conditionClass + '" title="' + escapeHtml(locationDescription) + '"><i class="fa-solid ' + conditionIcon + '"></i> ' + conditionText + '</span>';
         html += '</div>';
         html += '</div>';
         html += '<div class="card-footer">';
@@ -148,6 +148,11 @@ function getShortLocation(text) {
     if (!text) return text;
     const parts = text.split(',');
     return parts[0].trim() || text;
+}
+
+function truncateText(text, maxLength = 25) {
+    if (!text || text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
 }
 
 function updateMapAddresses() {
@@ -308,12 +313,13 @@ function renderModalContent(report) {
 
     const modalBody = document.getElementById('modal-body-content');
     if (!modalBody) return;
-    
+
     const typeText = report.type === 'found' ? 'DITEMUKAN' : 'HILANG';
     const badgeClass = report.type === 'found' ? 'badge-found' : 'badge-lost';
     const petName = report.petName && report.petName !== 'Unknown' && report.petName.trim() !== '' ? report.petName : report.species + ' Tanpa Nama';
     const speciesDetail = report.speciesDetail ? ` (${report.speciesDetail})` : '';
     const createdUpdatedText = report.updatedAt ? `Diperbarui ${report.updatedAt}` : `Dipublikasikan ${report.createdAt}`;
+    const locationDescriptionShort = report.location_description ? truncateText(report.location_description, 30) : '';
 
     modalBody.innerHTML = `
         <div class="modal-report-detail">
@@ -332,8 +338,8 @@ function renderModalContent(report) {
                         </div>
                         ${report.location_description ? `
                         <div class="modal-meta-item">
-                            <i class="fa-solid fa-map-pin"></i>
-                            <span>${report.location_description}</span>
+                            <i class="fa-solid fa-info-circle"></i>
+                            <span title="${report.location_description}">${locationDescriptionShort}</span>
                         </div>` : ''}
                         <div class="modal-meta-item">
                             <i class="fa-solid fa-calendar"></i>
@@ -410,9 +416,9 @@ function renderModalContent(report) {
                     scrollWheelZoom: false   // nonaktifkan scroll zoom di modal agar tidak ganggu scroll halaman
                 }).setView([report.latitude, report.longitude], 15);
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(activeModalMap);
 
                 L.marker([report.latitude, report.longitude]).addTo(activeModalMap);

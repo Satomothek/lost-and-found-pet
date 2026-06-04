@@ -17,15 +17,6 @@ $action = $_GET['action'] ?? '';
 
 // GET CHAT CONTACTS
 if ($method === 'GET' && $action === 'contacts') {
-    $createBlockTable = "CREATE TABLE IF NOT EXISTS user_blocks (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        blocker_id INT NOT NULL,
-        blocked_id INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_block (blocker_id, blocked_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-    executeQuery($connection, $createBlockTable);
-
     $query = "SELECT 
                 CASE 
                     WHEN sender_id = ? THEN receiver_id
@@ -111,21 +102,12 @@ elseif ($method === 'GET' && $action === 'history') {
     successResponse('Chat history berhasil diambil', ['messages' => $messages]);
 }
 
-//  GET USER PROFILE 
+//  GET USER PROFILE
 elseif ($method === 'GET' && $action === 'user') {
     $contactId = intval($_GET['user_id'] ?? 0);
     if (!$contactId) {
         errorResponse('User ID tidak valid', null, 400);
     }
-
-    $createTableQuery = "CREATE TABLE IF NOT EXISTS user_blocks (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        blocker_id INT NOT NULL,
-        blocked_id INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_block (blocker_id, blocked_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-    executeQuery($connection, $createTableQuery);
 
     $query = "SELECT id as contact_id, name as contactName, avatar_url as avatar, bio, phone FROM users WHERE id = ?";
     $contact = fetchOne($connection, $query, [$contactId]);
@@ -164,7 +146,7 @@ elseif ($method === 'POST' && $action === 'delete') {
     errorResponse('Gagal menghapus chat', null, 500);
 }
 
-//  BLOCK USER 
+//  BLOCK USER
 elseif ($method === 'POST' && $action === 'block') {
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
     $blockedId = intval($input['blocked_id'] ?? 0);
@@ -176,15 +158,6 @@ elseif ($method === 'POST' && $action === 'block') {
         errorResponse('Tidak dapat memblokir diri sendiri', null, 400);
     }
 
-    $createTableQuery = "CREATE TABLE IF NOT EXISTS user_blocks (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        blocker_id INT NOT NULL,
-        blocked_id INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_block (blocker_id, blocked_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-    executeQuery($connection, $createTableQuery);
-
     $query = "INSERT IGNORE INTO user_blocks (blocker_id, blocked_id) VALUES (?, ?)";
     $result = executeQuery($connection, $query, [$currentUser['id'], $blockedId]);
     if (!$result['success']) {
@@ -194,7 +167,7 @@ elseif ($method === 'POST' && $action === 'block') {
     successResponse('Pengguna berhasil diblokir', null);
 }
 
-//  UNBLOCK USER 
+//  UNBLOCK USER
 elseif ($method === 'POST' && $action === 'unblock') {
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
     $blockedId = intval($input['blocked_id'] ?? 0);
@@ -205,15 +178,6 @@ elseif ($method === 'POST' && $action === 'unblock') {
     if ($blockedId === $currentUser['id']) {
         errorResponse('Tidak dapat membuka blokir diri sendiri', null, 400);
     }
-
-    $createTableQuery = "CREATE TABLE IF NOT EXISTS user_blocks (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        blocker_id INT NOT NULL,
-        blocked_id INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_block (blocker_id, blocked_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-    executeQuery($connection, $createTableQuery);
 
     $query = "DELETE FROM user_blocks WHERE blocker_id = ? AND blocked_id = ?";
     $result = executeQuery($connection, $query, [$currentUser['id'], $blockedId]);
@@ -247,15 +211,6 @@ elseif ($method === 'POST' && $action === 'send') {
     if (!$receiver) {
         errorResponse('User penerima tidak ditemukan', null, 404);
     }
-
-    $createTableQuery = "CREATE TABLE IF NOT EXISTS user_blocks (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        blocker_id INT NOT NULL,
-        blocked_id INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_block (blocker_id, blocked_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-    executeQuery($connection, $createTableQuery);
 
     $blockedCheck = fetchOne($connection, "SELECT 1 FROM user_blocks WHERE blocker_id = ? AND blocked_id = ?", [$currentUser['id'], $receiverId]);
     if (!empty($blockedCheck)) {

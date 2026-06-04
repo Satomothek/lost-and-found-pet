@@ -23,9 +23,9 @@ $currentUser = getCurrentUser();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-    <link rel="stylesheet" href="../css/pages/profile.css">
+    <link rel="stylesheet" href="../public/css/pages/profile.css">
 </head>
 <body>
     <div class="bg-animation">
@@ -120,6 +120,9 @@ $currentUser = getCurrentUser();
                         <button class="tab-btn" data-tab="bookmarks">
                             <i class="fa-solid fa-bookmark"></i> Bookmarks
                         </button>
+                        <button class="tab-btn" data-tab="history">
+                            <i class="fa-solid fa-history"></i> History
+                        </button>
                         <button class="tab-btn" data-tab="stats">
                             <i class="fa-solid fa-chart-bar"></i> Statistik
                         </button>
@@ -147,6 +150,18 @@ $currentUser = getCurrentUser();
                                 <h3>Bookmarks</h3>
                             </div>
                             <div class="activity-list" id="profile-bookmarks-list">
+                                <!-- Loaded via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div id="history-tab" class="profile-tab-content" style="display: none;">
+                        <div class="profile-activity-section">
+                            <div class="profile-activity-header">
+                                <h3>Riwayat Laporan</h3>
+                            </div>
+                            <div class="activity-list" id="profile-history-list">
                                 <!-- Loaded via JavaScript -->
                             </div>
                         </div>
@@ -221,11 +236,11 @@ $currentUser = getCurrentUser();
     </div>
 
 
-    <script src="../js/utils.js"></script>
+    <script src="../public/js/utils.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         const currentUser = <?php echo json_encode($currentUser); ?>;
     </script>
-    <script src="../js/pages/profile.js"></script>
+    <script src="../public/js/pages/profile.js"></script>
 </body>
 </html>

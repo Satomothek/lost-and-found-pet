@@ -165,8 +165,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/pages/create-report.css">
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/pages/create-report.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- TensorFlow.js + COCO-SSD untuk validasi foto hewan -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
@@ -382,7 +382,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </main>
     </div>
 
-    <script src="../js/utils.js"></script>
+    <script src="../public/js/utils.js"></script>
     <script>
         const currentUser = <?php echo json_encode($currentUser); ?>;
         const currentPage = 'create';
@@ -390,6 +390,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const createReportSuccess = <?php echo json_encode($createReportSuccess); ?>;
         const editReport = <?php echo json_encode($editReport); ?>;
     </script>
-    <script src="../js/pages/create-report.js"></script>
+    <script src="../public/js/pages/create-report.js"></script>
 </body>
 </html>
