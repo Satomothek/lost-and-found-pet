@@ -55,7 +55,7 @@ if ($method === 'GET' && $action === 'contacts') {
     }
 
     foreach ($contacts as &$contact) {
-        $contact['avatar'] = normalizeAssetUrl($contact['avatar']);
+        $contact['avatar'] = $contact['avatar'] ? normalizeAssetUrl($contact['avatar']) : generateAvatarUrl($contact['contactName']);
         $contact['isBlocked'] = !empty($contact['isBlocked']);
     }
     unset($contact);
@@ -116,7 +116,7 @@ elseif ($method === 'GET' && $action === 'user') {
         errorResponse('User tidak ditemukan', null, 404);
     }
 
-    $contact['avatar'] = normalizeAssetUrl($contact['avatar']);
+    $contact['avatar'] = $contact['avatar'] ? normalizeAssetUrl($contact['avatar']) : generateAvatarUrl($contact['contactName']);
     $blockedCheck = fetchOne($connection, "SELECT 1 FROM user_blocks WHERE blocker_id = ? AND blocked_id = ?", [$currentUser['id'], $contactId]);
     $contact['isBlocked'] = !empty($blockedCheck);
 

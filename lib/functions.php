@@ -136,6 +136,28 @@ function fetchOne($connection, $query, $params = []) {
     return $exec['result']->fetch_assoc();
 }
 
+// AVATAR FUNCTIONS
+function generateAvatarUrl($name) {
+    if (!$name || trim($name) === '') {
+        return 'https://ui-avatars.com/api/?name=User&background=random&color=fff&size=150';
+    }
+
+    $words = array_filter(explode(' ', trim($name)));
+    $initials = '';
+
+    foreach ($words as $word) {
+        if (!empty($word)) {
+            $initials .= strtoupper($word[0]);
+            if (strlen($initials) >= 2) break;
+        }
+    }
+
+    $initials = $initials ?: strtoupper(substr($name, 0, 2));
+
+    return 'https://ui-avatars.com/api/?name=' . urlencode($initials) .
+           '&background=random&color=fff&size=150&font-size=0.4&bold=true';
+}
+
 // IMAGE UPLOAD FUNCTIONS
 function uploadImage($file, $uploadDir = 'uploads/') {
     if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {

@@ -30,7 +30,7 @@ if ($reports !== false) {
             'id' => $report['id'],
             'type' => $report['type'],
             'author' => $report['author'] ?: 'Anonim',
-            'authorImg' => normalizeAssetUrl($report['authorImg'] ?: 'https://i.pravatar.cc/150?img=68'),
+            'authorImg' => $report['authorImg'] ? normalizeAssetUrl($report['authorImg']) : generateAvatarUrl($report['author'] ?: 'Anonim'),
             'petName' => $report['pet_name'],
             'species' => $report['species'],
             'speciesDetail' => $report['species_detail'] ?? null,
@@ -66,7 +66,7 @@ function renderReportCards($reports) {
         $typeBadge = $report['type'] === 'found' ? 'FOUND' : 'LOST';
         $badgeClass = $report['type'] === 'found' ? 'badge-found' : 'badge-lost';
         $petImage = $report['image'] ?: 'https://via.placeholder.com/600x400?text=Pet+Image';
-        $authorImage = $report['authorImg'] ?: 'https://i.pravatar.cc/48?img=68';
+        $authorImage = $report['authorImg'];
         $petName = $report['petName'] !== 'Unknown' && trim($report['petName']) !== '' ? htmlspecialchars($report['petName']) : htmlspecialchars($report['species']) . ' Tanpa Nama';
         $speciesLabel = htmlspecialchars($report['species'] ?: 'Jenis tidak diketahui');
         $speciesDetailText = trim($report['species_detail'] ?? '');
