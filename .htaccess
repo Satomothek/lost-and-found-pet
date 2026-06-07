@@ -12,6 +12,8 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} !^.*/api/
     RewriteCond %{REQUEST_URI} !^.*/pages/
+    RewriteCond %{REQUEST_URI} !^.*/css/
+    RewriteCond %{REQUEST_URI} !^.*/js/
     RewriteCond %{REQUEST_URI} !^.*/public/
     RewriteCond %{REQUEST_URI} !^.*/images/
     RewriteRule ^(.*)$ pages/login.php [QSA,L]
@@ -45,6 +47,3 @@ Options -Indexes
     ExpiresByType image/png "access plus 1 year"
     ExpiresByType image/webp "access plus 1 year"
 </IfModule>
-
-# Catatan: jangan simpan API key di .htaccess
-# Gunakan environment variable di server config (mis. Apache VirtualHost atau .env)

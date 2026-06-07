@@ -133,7 +133,7 @@ $loggedIn = isset($_SESSION['user_id']);
                         <div class="logo-icon flex-center"><i class="fa-solid fa-paw"></i></div>
                         <span class="logo-text">Pet<span class="text-gradient">Founds</span></span>
                     </div>
-                    <p class="text-muted">© 2026 PetFounds Inc.<br>Developed by Kelompok 1 Praktikum Web.</p>
+                    <p class="text-muted">© 2026 PetFounds.<br>Developed by Kelompok 5.</p>
                 </div>
                 <div class="footer-links">
                     <a href="https://github.com/Satomothek/lost-and-found-pet" target="_blank">
