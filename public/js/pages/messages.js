@@ -176,7 +176,7 @@ async function selectChat(contactId, element) {
 function updateChatHeader() {
     const avatarEl = document.getElementById('active-chat-avatar');
     if (avatarEl) {
-        avatarEl.src = activeChatUser?.avatar || 'https://i.pravatar.cc/150?img=68';
+        avatarEl.src = activeChatUser?.avatar;
         avatarEl.alt = activeChatUser?.contactName ? `${activeChatUser.contactName} avatar` : 'Avatar kontak';
     }
     const nameEl = document.getElementById('active-chat-name');
@@ -264,8 +264,8 @@ async function viewContactProfile() {
     }
 
     const avatarEl = document.getElementById('profile-modal-avatar');
-    if (avatarEl) avatarEl.src = activeChatUser?.avatar || 'https://i.pravatar.cc/150?img=68';
-    
+    if (avatarEl) avatarEl.src = activeChatUser?.avatar;
+
     const nameEl = document.getElementById('profile-modal-name');
     if (nameEl) nameEl.textContent = activeChatUser?.contactName || 'Pengguna';
     

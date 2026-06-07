@@ -76,7 +76,7 @@ function renderFeed(reports) {
     let html = '';
     reports.forEach(report => {
         const petImageSrc = report.image || 'https://via.placeholder.com/600x400?text=Pet+Image';
-        const authorImageSrc = report.authorImg || 'https://i.pravatar.cc/48?img=68';
+        const authorImageSrc = report.authorImg;
         const badgeClass = report.type === 'found' ? 'badge-found' : 'badge-lost';
         const typeText = report.type === 'found' ? 'FOUND' : 'LOST';
         const title = report.petName && report.petName !== 'Unknown' && report.petName.trim() !== '' ? report.petName : report.species + ' Tanpa Nama';

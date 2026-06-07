@@ -22,11 +22,15 @@ function isLoggedIn() {
 // Get current user data from session
 function getCurrentUser() {
     if (isLoggedIn()) {
+        $avatar = $_SESSION['user_avatar'] ?? '';
+        if (!$avatar) {
+            $avatar = generateAvatarUrl($_SESSION['user_name']);
+        }
         return [
             'id' => $_SESSION['user_id'],
             'name' => $_SESSION['user_name'],
             'email' => $_SESSION['user_email'],
-            'avatar' => $_SESSION['user_avatar'] ?? 'https://i.pravatar.cc/150?img=68',
+            'avatar' => $avatar,
             'phone' => $_SESSION['user_phone'] ?? '',
             'bio' => $_SESSION['user_bio'] ?? ''
         ];
@@ -108,25 +112,25 @@ function register($connection, $name, $email, $password, $passwordConfirm) {
     
     // Hash password
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-    
-    // Insert new user
+
+    // Insert new user - avatar_url will be NULL, generated on demand
     $query = "INSERT INTO users (name, email, password, avatar_url) VALUES (?, ?, ?, ?)";
     $result = executeQuery($connection, $query, [
         $name,
         $email,
         $hashedPassword,
-        'https://i.pravatar.cc/150?img=68'
+        null
     ]);
-    
+
     if ($result['success']) {
         // Auto login after registration
         $_SESSION['user_id'] = $result['insert_id'];
         $_SESSION['user_name'] = $name;
         $_SESSION['user_email'] = $email;
-        $_SESSION['user_avatar'] = 'https://i.pravatar.cc/150?img=68';
+        $_SESSION['user_avatar'] = '';
         $_SESSION['user_phone'] = '';
         $_SESSION['user_bio'] = '';
-        
+
         return [
             'success' => true,
             'message' => 'Registrasi berhasil, silakan login'

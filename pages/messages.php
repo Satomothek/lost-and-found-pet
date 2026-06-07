@@ -138,7 +138,7 @@ $currentUser = getCurrentUser();
                         <div class="modal-profile-card">
                             <button class="modal-close" onclick="closeContactProfile()"><i class="fa-solid fa-xmark"></i></button>
                             <div class="modal-profile-header">
-                                <img id="profile-modal-avatar" src="https://i.pravatar.cc/150?img=68" alt="Avatar kontak">
+                                <img id="profile-modal-avatar" src="" alt="Avatar kontak">
                                 <div>
                                     <h3 id="profile-modal-name">Pengguna</h3>
                                     <p id="profile-modal-bio">Informasi profil akan ditampilkan di sini.</p>

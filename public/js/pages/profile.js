@@ -142,7 +142,7 @@ function renderActivity(reports, containerId = 'profile-activity-list') {
         const locationData = hasCoords
             ? ` data-latitude="${report.latitude}" data-longitude="${report.longitude}" data-fallback="${locationDisplay}"`
             : '';
-        const authorImg = report.authorImg || report.avatar_url || 'https://i.pravatar.cc/48?img=68';
+        const authorImg = report.authorImg || report.avatar_url;
         const authorName = report.author || report.name || 'Anonim';
         const isLiked = report.isLiked ? true : false;
         const iconClass = isLiked ? 'fa-solid' : 'fa-regular';
@@ -186,7 +186,7 @@ function renderActivity(reports, containerId = 'profile-activity-list') {
             </div>
             <div class="card-footer">
                 <div class="author-box">
-                    <img src="${escapeHtml(authorImg)}" class="author-img" alt="Author" onerror="this.src='https://i.pravatar.cc/48?img=68'">
+                    <img src="${escapeHtml(authorImg)}" class="author-img" alt="Author">
                     <div class="author-text">
                         <span class="author-name">${escapeHtml(authorName)}</span>
                         <span style="font-size:0.75rem; color:var(--text-muted);">${createdUpdatedLabel}</span>
@@ -575,7 +575,7 @@ function renderReportDetail(report) {
             ` : ''}
             <div class="modal-author-section">
                 <div class="modal-author-info">
-                    <img src="${escapeHtml(report.authorImg || 'https://i.pravatar.cc/48?img=68')}" alt="Author" class="modal-author-avatar">
+                    <img src="${escapeHtml(report.authorImg)}" alt="Author" class="modal-author-avatar">
                     <div class="modal-author-details">
                         <span class="modal-author-name">${escapeHtml(report.author)}</span>
                         <span class="modal-author-role">Pelapor</span>
