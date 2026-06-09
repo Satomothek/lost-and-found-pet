@@ -57,11 +57,21 @@ if (empty($token)) {
                 <input type="hidden" id="reset-token" value="<?php echo htmlspecialchars($token); ?>">
                 <div class="input-modern">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="reset-password" placeholder="Sandi Baru" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="reset-password" placeholder="Sandi Baru" required>
+                        <button type="button" class="toggle-password-btn" data-input="reset-password">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="input-modern">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="reset-password-confirm" placeholder="Konfirmasi Sandi Baru" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="reset-password-confirm" placeholder="Konfirmasi Sandi Baru" required>
+                        <button type="button" class="toggle-password-btn" data-input="reset-password-confirm">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" style="padding: 16px; margin-top: 20px;">
                     Atur Ulang Sandi
@@ -75,6 +85,7 @@ if (empty($token)) {
     </main>
 
     <script src="../public/js/utils.js"></script>
+    <script src="../public/js/password-toggle.js"></script>
     <script src="../public/js/pages/reset_password.js"></script>
 </body>
 </html>

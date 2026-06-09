@@ -141,11 +141,15 @@ try {
                 </div>
                 <div class="input-modern">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" name="password" placeholder="Password (min 6 karakter)" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" placeholder="Password (min 6 karakter)" required>
+                    </div>
                 </div>
                 <div class="input-modern">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" name="password_confirm" placeholder="Konfirmasi Password" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="password_confirm" placeholder="Konfirmasi Password" required>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" style="padding: 16px; margin-top: 20px;">
                     <i class="fa-solid fa-check"></i> Buat Admin
@@ -159,5 +163,6 @@ try {
         </div>
     </main>
 
+    <script src="../../public/js/password-toggle.js"></script>
 </body>
 </html>

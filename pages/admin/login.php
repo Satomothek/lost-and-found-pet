@@ -109,7 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="input-modern">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" name="password" placeholder="Password" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" placeholder="Password" required>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" style="padding: 16px; margin-top: 20px;">
                     <i class="fa-solid fa-sign-in-alt"></i> Masuk
@@ -122,5 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </main>
 
+    <script src="../../public/js/password-toggle.js"></script>
 </body>
 </html>

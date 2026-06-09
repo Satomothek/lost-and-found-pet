@@ -51,11 +51,13 @@ requireGuest();
                     <input type="email" id="login-email" placeholder="Alamat Email" required>
                 </div>
                 <div class="input-modern">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="login-password" placeholder="Kata Sandi" required>
+                    <div class="password-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="login-password" placeholder="Kata Sandi" required>
+                    </div>
                 </div>
                 <div style="text-align: right; margin-bottom: 15px;">
-                    <a href="forgot_password.php" class="text-primary font-bold" style="font-size: 0.85rem; text-decoration: none;">Lupa sandi?</a>
+                    <a href="forgot_password.php" class="auth-link" style="font-size: 0.9rem;">Lupa sandi?</a>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" style="padding: 16px; margin-top: 20px;">
                     Login
@@ -63,12 +65,13 @@ requireGuest();
             </form>
             
             <p class="text-center text-muted" style="margin-top: 25px; font-size: 0.9rem;">
-                Belum punya akun? <a href="register.php" class="text-primary font-bold register-link">Daftar Akun</a>
+                Belum punya akun? <a href="register.php" class="auth-link register-link">Daftar Akun</a>
             </p>
         </div>
     </main>
 
     <script src="../public/js/utils.js"></script>
+    <script src="../public/js/password-toggle.js"></script>
     <script src="../public/js/pages/login.js"></script>
 </body>
 </html>

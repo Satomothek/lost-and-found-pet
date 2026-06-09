@@ -56,11 +56,15 @@ requireGuest();
                 </div>
                 <div class="input-modern">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="register-password" placeholder="Kata Sandi" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="register-password" placeholder="Kata Sandi" required>
+                    </div>
                 </div>
                 <div class="input-modern">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="register-password-confirm" placeholder="Konfirmasi Kata Sandi" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="register-password-confirm" placeholder="Konfirmasi Kata Sandi" required>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" style="padding: 16px; margin-top: 20px;">
                     <i class="fa-solid fa-check"></i> Daftar
@@ -68,12 +72,13 @@ requireGuest();
             </form>
             
             <p class="text-center text-muted" style="margin-top: 25px; font-size: 0.9rem;">
-                Sudah punya akun? <a href="login.php" class="text-primary font-bold">Masuk</a>
+                Sudah punya akun? <a href="login.php" class="auth-link register-link">Masuk</a>
             </p>
         </div>
     </main>
 
     <script src="../public/js/utils.js"></script>
+    <script src="../public/js/password-toggle.js"></script>
     <script src="../public/js/pages/register.js"></script>
 </body>
 </html>
