@@ -6,6 +6,7 @@
 
 session_start();
 require_once dirname(__FILE__) . '/../../lib/admin_auth.php';
+require_once dirname(__FILE__) . '/../../lib/functions.php';
 require_once dirname(__FILE__) . '/../../config/database.php';
 
 requireAdminLogin();
@@ -16,6 +17,34 @@ $pdo = new PDO(
     DB_USER,
     DB_PASS
 );
+
+// Helper function to get proper image URL for admin panel
+function getImageUrl($imagePath) {
+    if (!$imagePath) {
+        return '';
+    }
+
+    $imagePath = trim($imagePath);
+
+    // If already a full URL, return as is
+    if (preg_match('/^https?:\/\//i', $imagePath)) {
+        return $imagePath;
+    }
+
+    // Remove leading slashes and ../
+    $imagePath = ltrim($imagePath, '/');
+    $imagePath = preg_replace('#^(\.\./)+#', '', $imagePath);
+
+    // Get app root from SCRIPT_NAME
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '/lost-and-found-pet/pages/admin/reports.php';
+    $appRoot = dirname(dirname(dirname($scriptName)));
+
+    if ($appRoot === '/' || $appRoot === '\\' || $appRoot === '') {
+        return '/' . $imagePath;
+    }
+
+    return rtrim($appRoot, '/') . '/' . $imagePath;
+}
 
 // Handle actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -104,7 +133,10 @@ if (isset($_GET['detail'])) {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../public/css/style.css">
     <link rel="stylesheet" href="../../public/css/admin.css">
+    <link rel="stylesheet" href="../../public/css/report-modal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <!-- Sidebar Navigation -->
@@ -273,68 +305,194 @@ if (isset($_GET['detail'])) {
         </section>
 
         <!-- Report Detail Modal -->
-        <?php if ($report_detail): ?>
+        <?php if ($report_detail):
+            $petImageUrl = getImageUrl($report_detail['image_url']);
+            if (!$petImageUrl) {
+                $petImageUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect fill="%23e0e0e0" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" font-size="24" fill="%23999" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+            }
+            $avatarUrl = $report_detail['avatar_url'] ?? '';
+            if (!$avatarUrl) {
+                $avatarUrl = generateAvatarUrl($report_detail['user_name'] ?? 'User');
+            }
+        ?>
         <div class="modal" id="reportDetailModal" style="display: block;">
-            <div class="modal-content" style="max-width: 700px;">
-                <div class="modal-header">
-                    <h2>Detail Laporan</h2>
-                    <a href="reports.php" class="close">&times;</a>
+            <div class="modal-content-modern">
+                <!-- Hero Image Section -->
+                <div class="hero-image-section">
+                    <img src="<?php echo htmlspecialchars($petImageUrl); ?>" alt="Pet Image" class="hero-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22350%22 height=%22350%22 viewBox=%220 0 350 350%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22350%22 height=%22350%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2232%22 fill=%22%23999%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                    <button class="modal-close-btn" onclick="window.location.href='reports.php'">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 20px; margin-bottom: 20px;">
-                        <img src="<?php echo htmlspecialchars($report_detail['image_url'] ?? 'https://via.placeholder.com/200'); ?>" alt="Pet Image" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
-                        <div>
-                            <h3><?php echo htmlspecialchars($report_detail['pet_name'] ?? 'N/A'); ?></h3>
-                            <p><strong>Tipe:</strong> <span class="badge <?php echo $report_detail['type'] === 'lost' ? 'badge-warning' : 'badge-success'; ?>"><?php echo $report_detail['type'] === 'lost' ? 'Hilang' : 'Ditemukan'; ?></span></p>
-                            <p><strong>Spesies:</strong> <?php echo htmlspecialchars($report_detail['species']); ?> (<?php echo htmlspecialchars($report_detail['species_detail']); ?>)</p>
-                            <p><strong>Lokasi:</strong> <?php echo htmlspecialchars($report_detail['location']); ?></p>
-                            <p><strong>Tanggal Kejadian:</strong> <?php echo $report_detail['event_date'] ? date('d M Y', strtotime($report_detail['event_date'])) : 'N/A'; ?></p>
-                            <p><strong>Status:</strong> <span class="badge <?php echo $report_detail['status'] === 'active' ? 'badge-primary' : 'badge-info'; ?>"><?php echo ucfirst($report_detail['status']); ?></span></p>
-                            <p><strong>Verifikasi:</strong> <?php echo $report_detail['is_verified'] ? '✓ Terverifikasi' : 'Belum Verifikasi'; ?></p>
+
+                <!-- Main Card Content -->
+                <div class="modal-card-content">
+                    <!-- Pet Name -->
+                    <div class="pet-header-section">
+                        <h2 class="pet-title"><?php echo htmlspecialchars($report_detail['pet_name'] ?? 'Hewan Peliharaan'); ?></h2>
+
+                        <!-- Status Badges -->
+                        <div class="badges-row">
+                            <span class="badge badge-type badge-<?php echo $report_detail['type'] === 'lost' ? 'warning' : 'success'; ?>">
+                                <i class="fa-solid fa-<?php echo $report_detail['type'] === 'lost' ? 'magnifying-glass' : 'check-circle'; ?>"></i>
+                                <?php echo $report_detail['type'] === 'lost' ? 'Hilang' : 'Ditemukan'; ?>
+                            </span>
+                            <span class="badge badge-verify badge-<?php echo $report_detail['is_verified'] ? 'success' : 'secondary'; ?>">
+                                <i class="fa-solid fa-<?php echo $report_detail['is_verified'] ? 'certificate' : 'question'; ?>"></i>
+                                <?php echo $report_detail['is_verified'] ? 'Terverifikasi' : 'Belum Verifikasi'; ?>
+                            </span>
+                            <span class="badge badge-status badge-<?php echo $report_detail['status'] === 'active' ? 'primary' : 'info'; ?>">
+                                <i class="fa-solid fa-<?php echo $report_detail['status'] === 'active' ? 'circle-dot' : 'check-double'; ?>"></i>
+                                <?php echo $report_detail['status'] === 'active' ? 'Aktif' : 'Selesai'; ?>
+                            </span>
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <h4>Deskripsi</h4>
-                        <p><?php echo htmlspecialchars($report_detail['description']); ?></p>
+                    <!-- Quick Info Grid -->
+                    <div class="quick-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Spesies</span>
+                            <span class="info-value"><?php echo htmlspecialchars($report_detail['species']); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Ras</span>
+                            <span class="info-value"><?php echo htmlspecialchars($report_detail['species_detail'] ?? 'Tidak ditentukan'); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Tanggal Kejadian</span>
+                            <span class="info-value"><?php echo $report_detail['event_date'] ? date('d M Y', strtotime($report_detail['event_date'])) : 'N/A'; ?></span>
+                        </div>
                     </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <h4>Lokasi Detail</h4>
-                        <p><?php echo htmlspecialchars($report_detail['location_description'] ?? 'Tidak ada deskripsi tambahan'); ?></p>
-                        <?php if ($report_detail['latitude'] && $report_detail['longitude']): ?>
-                        <p><strong>Koordinat:</strong> <?php echo htmlspecialchars($report_detail['latitude']); ?>, <?php echo htmlspecialchars($report_detail['longitude']); ?></p>
-                        <?php endif; ?>
+                    <!-- Description Section -->
+                    <div class="content-section">
+                        <h3 class="section-title"><i class="fa-solid fa-align-left"></i> Deskripsi</h3>
+                        <p class="section-text"><?php echo nl2br(htmlspecialchars($report_detail['description'])); ?></p>
                     </div>
 
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                        <h4>Info Pelapor</h4>
-                        <div style="display: flex; gap: 15px; align-items: flex-start;">
-                            <img src="<?php echo htmlspecialchars($report_detail['avatar_url']); ?>" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%;">
-                            <div>
-                                <p><strong><?php echo htmlspecialchars($report_detail['user_name']); ?></strong></p>
-                                <p><strong>Email:</strong> <?php echo htmlspecialchars($report_detail['email']); ?></p>
-                                <p><strong>Telepon:</strong> <?php echo htmlspecialchars($report_detail['phone'] ?? 'N/A'); ?></p>
-                                <p><strong>Dilaporkan:</strong> <?php echo date('d M Y H:i', strtotime($report_detail['created_at'])); ?></p>
+                    <!-- Location Section -->
+                    <div class="content-section location-section">
+                        <h3 class="section-title"><i class="fa-solid fa-location-dot"></i> Lokasi Terakhir</h3>
+                        <div class="location-display">
+                            <p class="location-address"><?php echo htmlspecialchars($report_detail['location']); ?></p>
+                            <p class="location-description"><?php echo nl2br(htmlspecialchars($report_detail['location_description'] ?? 'Tidak ada keterangan tambahan')); ?></p>
+                            <?php if ($report_detail['latitude'] && $report_detail['longitude']): ?>
+                            <div class="map-container" id="reportMap"></div>
+                            <p class="coordinates-info">
+                                <i class="fa-solid fa-satellite"></i>
+                                <?php echo htmlspecialchars($report_detail['latitude']); ?>, <?php echo htmlspecialchars($report_detail['longitude']); ?>
+                            </p>
+                            <?php else: ?>
+                            <div class="no-map-available">
+                                <i class="fa-solid fa-map"></i>
+                                <p>Koordinat lokasi tidak tersedia</p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- Reporter Card -->
+                    <div class="reporter-card">
+                        <div class="reporter-avatar-wrapper">
+                            <img src="<?php echo htmlspecialchars($avatarUrl); ?>" alt="Avatar" class="reporter-avatar-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2270%22 height=%2270%22 viewBox=%220 0 70 70%22%3E%3Ccircle cx=%2235%22 cy=%2235%22 r=%2235%22 fill=%224f46e5%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2228%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3E?%3C/text%3E%3C/svg%3E'">
+                        </div>
+                        <div class="reporter-info-wrapper">
+                            <p class="reporter-name"><?php echo htmlspecialchars($report_detail['user_name']); ?></p>
+                            <div class="reporter-detail-item">
+                                <i class="fa-solid fa-envelope"></i>
+                                <span><?php echo htmlspecialchars($report_detail['email']); ?></span>
+                            </div>
+                            <div class="reporter-detail-item">
+                                <i class="fa-solid fa-phone"></i>
+                                <span><?php echo htmlspecialchars($report_detail['phone'] ?? 'Tidak tersedia'); ?></span>
+                            </div>
+                            <div class="reporter-detail-item">
+                                <i class="fa-solid fa-clock"></i>
+                                <span><?php echo date('d M Y H:i', strtotime($report_detail['created_at'])); ?></span>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <a href="reports.php" class="btn btn-secondary">Tutup</a>
+
+                    <!-- Close Button Footer -->
+                    <a href="reports.php" class="close-button-footer">
+                        <i class="fa-solid fa-xmark"></i> Tutup
+                    </a>
                 </div>
             </div>
         </div>
-        <style>
-            .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
-            .modal-content { background-color: white; margin: 30px auto; padding: 0; border-radius: 8px; width: 90%; }
-            .modal-header { padding: 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-            .modal-header h2 { margin: 0; }
-            .modal-body { padding: 20px; max-height: calc(100vh - 200px); overflow-y: auto; }
-            .modal-footer { padding: 20px; border-top: 1px solid #ddd; display: flex; gap: 10px; justify-content: flex-end; }
-            .close { color: #aaa; cursor: pointer; font-size: 28px; font-weight: bold; }
-            .close:hover { color: black; }
-        </style>
+
+        <script>
+        // Initialize Leaflet map if coordinates exist
+        function initializeMap() {
+            const mapElement = document.getElementById('reportMap');
+            if (!mapElement) {
+                console.log('Map element not found');
+                return;
+            }
+
+            const lat = <?php echo $report_detail['latitude'] ?? 'null'; ?>;
+            const lng = <?php echo $report_detail['longitude'] ?? 'null'; ?>;
+            const petName = "<?php echo addslashes(htmlspecialchars($report_detail['pet_name'] ?? 'Hewan Peliharaan')); ?>";
+
+            console.log('Map coordinates:', lat, lng);
+
+            if (lat && lng && typeof L !== 'undefined') {
+                try {
+                    // Set explicit dimensions before init
+                    mapElement.style.width  = '100%';
+                    mapElement.style.height = '350px';
+
+                    const map = L.map(mapElement, {
+                        center: [lat, lng],
+                        zoom: 16,
+                        scrollWheelZoom: false,
+                        zoomControl: true
+                    });
+
+                    // CartoDB tile — tanpa {r} agar tidak blank di semua browser
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+                        maxZoom: 20,
+                        subdomains: 'abcd'
+                    }).addTo(map);
+
+                    // Custom marker icon (hindari broken icon default di beberapa server)
+                    const markerIcon = L.icon({
+                        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+                        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                        iconSize:    [25, 41],
+                        iconAnchor:  [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize:  [41, 41]
+                    });
+
+                    const marker = L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+                    marker.bindPopup('<strong>' + petName + '</strong>').openPopup();
+
+                    // invalidateSize berlapis: segera, 300ms, 600ms, 1s
+                    // — memastikan map tidak blank saat di dalam modal/container
+                    map.invalidateSize();
+                    [300, 600, 1000].forEach(function(delay) {
+                        setTimeout(function() { map.invalidateSize(); }, delay);
+                    });
+
+                    console.log('Map initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing map:', error);
+                }
+            } else {
+                console.log('Missing coordinates or Leaflet library');
+            }
+        }
+
+        // Jalankan setelah DOM siap; Leaflet sudah dimuat di <head>
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeMap);
+        } else {
+            initializeMap();
+        }
+        </script>
         <?php endif; ?>
     </main>
 </body>

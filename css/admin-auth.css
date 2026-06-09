@@ -1,0 +1,62 @@
+/* Admin Authentication Pages Styling */
+/* Login & Setup Pages */
+
+.auth-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 5px;
+}
+
+.auth-subtitle {
+    margin-bottom: 35px;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 12px 14px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.alert-error {
+    background-color: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+}
+
+.alert-error i {
+    flex-shrink: 0;
+}
+
+.alert-success {
+    background-color: #efe;
+    color: #3c3;
+    border: 1px solid #cfc;
+}
+
+.alert-success i {
+    flex-shrink: 0;
+}
+
+/* Button Block */
+.btn-block {
+    width: 100%;
+    align-self: center;
+    padding: 16px 48px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-title {
+        font-size: 1.5rem;
+    }
+
+    .alert {
+        flex-wrap: wrap;
+    }
+}

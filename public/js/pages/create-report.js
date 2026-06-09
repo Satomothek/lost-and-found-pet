@@ -118,9 +118,10 @@ function initializeReportMap(latitude = -7.797068, longitude = 110.370529) {
             reportMap = L.map('report-map', { zoomSnap: 0.5 }).setView([latitude, longitude], 16);
             window.reportMap = reportMap;
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20,
+                attribution: '&copy; <a href="https://www.carto.com/attributions">CARTO</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                subdomains: 'abcd'
             }).addTo(reportMap);
 
             reportMap.on('click', function(e) {
@@ -250,8 +251,8 @@ function setReportCoordinates(lat, lng) {
     const latInput = document.getElementById('latitude');
     const lngInput = document.getElementById('longitude');
     if (latInput && lngInput) {
-        latInput.value = lat;
-        lngInput.value = lng;
+        latInput.value = parseFloat(lat).toFixed(8);
+        lngInput.value = parseFloat(lng).toFixed(8);
     }
     initializeReportMap(lat, lng);
     reverseGeocodeCoordinates(lat, lng);
@@ -337,15 +338,17 @@ function requestCurrentLocation() {
 function setupCreateForm() {
     const existingLat = document.getElementById('latitude')?.value;
     const existingLng = document.getElementById('longitude')?.value;
-    
+
     try {
         // Jika ada data existing (mode edit), gunakan koordinat tersebut
         if (existingLat && existingLng && existingLat !== '' && existingLng !== '') {
-            console.log('Using existing coordinates:', existingLat, existingLng);
-            initializeReportMap(parseFloat(existingLat), parseFloat(existingLng));
+            const lat = parseFloat(existingLat);
+            const lng = parseFloat(existingLng);
+            console.log('Using existing coordinates:', lat, lng);
+            initializeReportMap(lat, lng);
             const locationDisplay = document.getElementById('location-display');
             if (locationDisplay && !locationDisplay.value) {
-                reverseGeocodeCoordinates(parseFloat(existingLat), parseFloat(existingLng));
+                reverseGeocodeCoordinates(lat, lng);
             }
         } else {
             // GPS mode default akan dipanggil oleh applyLocationMode('gps') di bawah
@@ -956,7 +959,7 @@ async function validateImageWithTF(file) {
         } else if (personRatio > 0.20) {
             // ❌ Foto manusia mendominasi
             imageValidated = true; imageIsAnimal = false;
-            setPreviewBadge(false, 'Foto manusia tidak diperbolehkan');
+            setPreviewBadge(false, 'Foto bukan hewan tidak diperbolehkan');
 
         } else {
             // COCO-SSD tidak mendeteksi hewan dari 10 class-nya.

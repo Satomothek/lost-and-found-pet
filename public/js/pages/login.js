@@ -16,7 +16,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         const data = await response.json();
         
         if (data.status === 'success') {
-            showToast('Otorisasi Jaringan Berhasil.', 'success');
+            showToast('Login Berhasil.', 'success');
             setTimeout(() => {
                 window.location.href = 'explore.php';
             }, 1000);

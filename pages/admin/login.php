@@ -62,8 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - PetFounds</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../public/css/style.css">
+    <link rel="stylesheet" href="../../public/css/admin.css">
+    <link rel="stylesheet" href="../../css/admin-auth.css">
 </head>
 <body class="bg-animation">
 
@@ -80,22 +85,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main class="auth-layout">
         <div class="auth-card">
-            <h2 class="text-center" style="font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 5px;">
-                Admin Login
-            </h2>
-            <p class="text-center text-muted" style="margin-bottom: 35px;">
-                Masuk untuk mengelola PetFounds.
-            </p>
+            <h2 class="text-center auth-title">Admin Login</h2>
+            <p class="text-center text-muted auth-subtitle">Masuk untuk mengelola PetFounds</p>
 
             <?php if ($error): ?>
-            <div style="background-color: #fee; color: #c33; border: 1px solid #fcc; padding: 12px 14px; border-radius: 14px; margin-bottom: 20px; font-size: 0.95rem; display: flex; gap: 10px; align-items: center;">
+            <div class="alert alert-error">
                 <i class="fa-solid fa-circle-exclamation"></i>
                 <span><?php echo htmlspecialchars($error); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($success): ?>
-            <div style="background-color: #efe; color: #3c3; border: 1px solid #cfc; padding: 12px 14px; border-radius: 14px; margin-bottom: 20px; font-size: 0.95rem; display: flex; gap: 10px; align-items: center;">
+            <div class="alert alert-success">
                 <i class="fa-solid fa-circle-check"></i>
                 <span><?php echo htmlspecialchars($success); ?></span>
             </div>

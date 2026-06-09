@@ -416,9 +416,10 @@ function renderModalContent(report) {
                     scrollWheelZoom: false   // nonaktifkan scroll zoom di modal agar tidak ganggu scroll halaman
                 }).setView([report.latitude, report.longitude], 15);
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 20,
+                    attribution: '&copy; <a href="https://www.carto.com/attributions">CARTO</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    subdomains: 'abcd'
                 }).addTo(activeModalMap);
 
                 L.marker([report.latitude, report.longitude]).addTo(activeModalMap);

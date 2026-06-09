@@ -133,7 +133,7 @@ function register($connection, $name, $email, $password, $passwordConfirm) {
 
         return [
             'success' => true,
-            'message' => 'Registrasi berhasil, silakan login'
+            'message' => 'Registrasi berhasil, masuk ke akun anda',
         ];
     }
     

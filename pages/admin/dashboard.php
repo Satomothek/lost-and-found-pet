@@ -210,7 +210,7 @@ $monthly_stats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="stat-card">
                 <div class="stat-icon" style="background: #cfe2ff; color: #084298;">
-                    <i class="fa-solid fa-badge-check"></i>
+                    <i class="fa-solid fa-check-circle"></i>
                 </div>
                 <div class="stat-content">
                     <h3 class="stat-value"><?php echo $stats['verified_reports']; ?></h3>

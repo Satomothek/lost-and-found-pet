@@ -18,7 +18,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
         const data = await response.json();
         
         if (data.status === 'success') {
-            showToast('Registrasi berhasil! Silakan login', 'success');
+            showToast('Registrasi berhasil! masuk ke akun anda', 'success');
             setTimeout(() => {
                 window.location.href = 'login.php';
             }, 1500);

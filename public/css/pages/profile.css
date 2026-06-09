@@ -99,17 +99,48 @@
 
 /* Cover banner */
 .profile-cover {
-    height: 160px;
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
-    position: relative;
-    overflow: hidden;
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    #0f2647 0%,
+    #1a4a8a 30%,
+    #1e6fb5 60%,
+    #3b9ddd 85%,
+    #7ecef4 100%
+  );
+  background-size: 280% 280%;
+  animation: gradientShift 12s ease infinite;
 }
+
 .profile-cover::before {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-        radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 20%, rgba(168,85,247,0.4) 0%, transparent 50%);
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    /* orb putih kiri atas */
+    radial-gradient(ellipse at 15% 30%, rgba(255,255,255,0.13) 0%, transparent 55%),
+    /* orb biru terang kanan bawah */
+    radial-gradient(ellipse at 80% 80%, rgba(126,206,244,0.22) 0%, transparent 50%),
+    /* orb aksen tengah */
+    radial-gradient(ellipse at 55% 20%, rgba(255,255,255,0.08) 0%, transparent 40%);
+}
+
+.profile-cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  /* grid tipis */
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* ── animasi ── */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50% }
+  50%  { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
 }
 
 /* Info wrapper */

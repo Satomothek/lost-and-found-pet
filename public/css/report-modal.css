@@ -1,0 +1,455 @@
+/* ===================================================
+   Report Detail Modal — PetFounds Admin
+   reports.php modal styles (extracted)
+   =================================================== */
+
+/* ===== MODAL OVERLAY ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ===== MAIN CARD CONTAINER ===== */
+.modal-content-modern {
+    background-color: white;
+    margin: 20px auto;
+    width: 95%;
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ===== HERO IMAGE SECTION ===== */
+.hero-image-section {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #0f172a;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-close-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+/* ===== CARD CONTENT ===== */
+.modal-card-content {
+    padding: 0;
+}
+
+/* ===== PET HEADER SECTION ===== */
+.pet-header-section {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.pet-title {
+    margin: 0 0 12px 0;
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+/* ===== BADGES ROW ===== */
+.badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+    cursor: default;
+}
+
+.badge-type,
+.badge-verify,
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.badge-warning  { background-color: #fef3c7; color: #92400e; }
+.badge-success  { background-color: #d1fae5; color: #065f46; }
+.badge-primary  { background-color: #e0e7ff; color: #3730a3; }
+.badge-info     { background-color: #cffafe; color: #164e63; }
+.badge-secondary { background-color: #e5e7eb; color: #374151; }
+
+.badge i { font-size: 11px; }
+
+/* ===== QUICK INFO GRID ===== */
+.quick-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fafbfc;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.info-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+}
+
+.info-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+/* ===== CONTENT SECTIONS ===== */
+.content-section {
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.section-title {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title i {
+    color: #4f46e5;
+    font-size: 16px;
+}
+
+.section-text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* ===== LOCATION SECTION ===== */
+.location-section {
+    padding: 24px !important;
+}
+
+.location-display {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.location-address {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.location-address::before {
+    content: '📍';
+    font-size: 20px;
+}
+
+.location-description {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.map-container {
+    width: 100%;
+    height: 350px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.no-map-available {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 280px;
+    background: #f3f4f6;
+    border-radius: 16px;
+    color: #999;
+    font-size: 14px;
+    margin-top: 12px;
+}
+
+.no-map-available i {
+    font-size: 48px;
+    color: #d1d5db;
+}
+
+.coordinates-info {
+    margin: 0;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    background: #f3f4f6;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border-left: 3px solid #4f46e5;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.coordinates-info i { color: #4f46e5; }
+
+/* ===== REPORTER CARD ===== */
+.reporter-card {
+    display: flex;
+    gap: 16px;
+    padding: 20px 24px;
+    background: #f9fafb;
+    border-radius: 12px;
+    margin: 24px 24px 0;
+}
+
+.reporter-avatar-wrapper { flex-shrink: 0; }
+
+.reporter-avatar-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid white;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reporter-info-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reporter-name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.reporter-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.reporter-detail-item i {
+    color: #4f46e5;
+    font-size: 13px;
+    width: 16px;
+    text-align: center;
+}
+
+/* ===== CLOSE BUTTON FOOTER ===== */
+.close-button-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #666;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-button-footer:hover {
+    background: #f3f4f6;
+    color: #0f172a;
+}
+
+/* ===== RESPONSIVE — tablet ===== */
+@media (max-width: 768px) {
+    .modal-content-modern {
+        width: 100%;
+        margin: 0;
+        border-radius: 16px 16px 0 0;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .hero-image-section { height: 300px; }
+    .pet-title          { font-size: 26px; }
+
+    .quick-info-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 16px 20px;
+    }
+
+    .content-section { padding: 20px; }
+
+    .reporter-card {
+        margin: 20px 20px 0;
+        padding: 16px 20px;
+    }
+}
+
+/* ===== RESPONSIVE — mobile ===== */
+@media (max-width: 480px) {
+    .modal-content-modern {
+        width: 100%;
+        margin: 0;
+        border-radius: 16px 16px 0 0;
+        max-height: 95vh;
+    }
+
+    .hero-image-section { height: 280px; }
+
+    .modal-close-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        top: 12px;
+        right: 12px;
+    }
+
+    .pet-header-section,
+    .content-section { padding: 16px; }
+
+    .pet-title { font-size: 24px; }
+
+    .quick-info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .badges-row { gap: 6px; }
+
+    .badge {
+        padding: 7px 12px;
+        font-size: 11px;
+    }
+
+    .reporter-card {
+        margin: 16px 16px 0;
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    .reporter-avatar-img {
+        width: 60px;
+        height: 60px;
+        border-width: 2px;
+    }
+
+    .reporter-name        { font-size: 15px; }
+    .reporter-detail-item { font-size: 13px; }
+    .location-address     { font-size: 16px; }
+
+    .close-button-footer {
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+
+    .map-container { height: 320px; }
+}
+
+/* ===== LEAFLET MAP OVERRIDES ===== */
+.leaflet-container {
+    background: white;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.leaflet-attribution { display: none !important; }
+
+.map-container .leaflet-container { border-radius: 16px; }
