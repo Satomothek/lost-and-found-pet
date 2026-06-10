@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../public/css/style.css">
     <link rel="stylesheet" href="../../public/css/admin.css">
-    <link rel="stylesheet" href="../../css/admin-auth.css">
+    <link rel="stylesheet" href="../../public/css/admin-auth.css">
 </head>
 <body class="bg-animation">
 
